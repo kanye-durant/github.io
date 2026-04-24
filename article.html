@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://zsztoepvtxddqyhdkqdb.supabase.co;" />
+    <title>文章阅读 - 白蝉声</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Georgia', serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* 顶部搜索栏 */
+      .top-bar {
+        background-color: #f5f5f5;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .top-bar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .top-bar-left .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #000;
+        text-decoration: none;
+        font-family: 'Georgia', serif;
+      }
+
+      .top-bar-center {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 30px;
+      }
+
+      .search-form {
+        display: flex;
+        width: 100%;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 8px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 0.9rem;
+      }
+
+      .search-btn {
+        padding: 8px 15px;
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .search-btn:hover {
+        background-color: #333;
+      }
+
+      .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .top-link {
+        color: #000;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+
+      .top-link:hover {
+        color: #666;
+      }
+
+      .submit-btn {
+        background-color: #000;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+      }
+
+      .submit-btn:hover {
+        background-color: #333;
+        color: #fff;
+      }
+
+      .section {
+        padding: 60px 0;
+      }
+
+      .article-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .article-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #000;
+      }
+
+      .article-meta {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+        font-size: 1rem;
+        color: #666;
+      }
+
+      .article-image {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        margin-bottom: 40px;
+        border-radius: 16px;
+      }
+
+      .article-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 40px;
+      }
+
+      .article-content p {
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background-color: #333;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 100px 0;
+      }
+
+      .empty-state h3 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #000;
+      }
+
+      .empty-state p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 40px;
+      }
+
+      /* 底部导航栏 */
+      .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 90;
+      }
+
+      .bottom-nav-container {
+        display: flex;
+        align-items: center;
+        background-color: rgba(15, 15, 15, 0.8);
+        border-radius: 12px;
+        padding: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(60, 60, 60, 0.5);
+      }
+
+      .bottom-nav-logo {
+        background-color: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 64px;
+      }
+
+      .bottom-nav-logo a {
+        color: #fff;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .bottom-nav-logo:hover {
+        background-color: #111;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-logo:hover a {
+        color: #fff;
+      }
+
+      .bottom-nav-links-container {
+        background-color: rgba(68, 68, 68, 0.8);
+        border-radius: 10px;
+        padding: 5px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-links {
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-link {
+        background-color: rgba(68, 68, 68, 0.8);
+        border: 1px solid #888;
+        border-radius: 8px;
+        padding: 12px 10px;
+        color: #ddd;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 54px;
+        margin-right: 5px;
+      }
+
+      .bottom-nav-link:last-child {
+        border: 1px solid #fff;
+        margin-right: 0;
+      }
+
+      .bottom-nav-link:hover {
+        background-color: rgba(85, 85, 85, 0.9);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-left: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 64px;
+      }
+
+      .bottom-nav-btn a {
+        color: #000;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: block;
+        text-align: center;
+        line-height: 1.2;
+        padding-top: 5px;
+      }
+
+      .bottom-nav-btn:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn:hover a {
+        color: #000;
+      }
+
+      footer {
+        background-color: #fff;
+        color: #000;
+        text-align: center;
+        padding: 40px 0;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #000;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 15px;
+        margin: 10px 0;
+      }
+
+      .footer-links a {
+        color: #000;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: #666;
+      }
+
+      .footer-content p {
+        font-size: 0.8rem;
+        margin-top: 10px;
+        color: #000;
+      }
+
+      @media (max-width: 768px) {
+        .top-bar-content {
+          flex-direction: column;
+          gap: 10px;
+          align-items: stretch;
+        }
+        
+        .top-bar-center {
+          margin: 0;
+          max-width: 100%;
+        }
+        
+        .top-bar-right {
+          justify-content: center;
+        }
+        
+        .article-header h1 {
+          font-size: 2rem;
+        }
+        
+        .article-meta {
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+        }
+        
+        /* 响应式底部导航栏 */
+        .bottom-nav {
+          width: 90%;
+          bottom: 10px;
+        }
+        
+        .bottom-nav-container {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 5px;
+          padding: 5px;
+        }
+        
+        .bottom-nav-logo {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+          margin-bottom: 5px;
+          padding: 17px 18px;
+          height: auto;
+        }
+        
+        .bottom-nav-links-container {
+          margin-right: 0;
+          width: 100%;
+          margin-bottom: 5px;
+          padding: 5px;
+        }
+        
+        .bottom-nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          width: 100%;
+        }
+        
+        .bottom-nav-link {
+          margin-right: 5px;
+          margin-bottom: 5px;
+          margin-left: 5px;
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          flex: 1;
+          min-width: 45%;
+          height: auto;
+        }
+        
+        .bottom-nav-link:last-child {
+          border-bottom: none;
+        }
+        
+        .bottom-nav-btn {
+          margin-left: 0;
+          width: 100%;
+          text-align: center;
+          padding: 17px 18px;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+    <div class="top-bar" style="background-color: #f0f0f0; padding: 15px 0;">
+      <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="top-bar-content" style="display: flex; align-items: center; justify-content: space-between;">
+          <!-- 左侧Logo和导航链接 -->
+          <div class="top-bar-left" style="display: flex; align-items: flex-start; gap: 30px;">
+            <a href="index.html" class="logo" style="display: flex; align-items: center; text-decoration: none; width: 32px; margin-top: 8px;"></a>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="index.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">首页</a>
+                <a href="category.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">分类</a>
+                <a href="column.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">专栏</a>
+                <a href="about.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">关于</a>
+                <a href="contact.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">联系</a>
+              </div>
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="category.html?category=shiyan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">实验</a>
+                <a href="category.html?category=duhougan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">读后感</a>
+                <a href="category.html?category=yuleyoumo" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">娱乐幽默</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 中间搜索框 -->
+          <div class="top-bar-center" style="flex: 0 0 400px; margin: 0 20px;">
+            <div class="search-container" style="position: relative; width: 100%;">
+              <input type="text" class="search-input" style="width: 100%; padding: 14px 40px 14px 15px; background-color: #d8d8d8; border: none; border-radius: 8px; font-size: 0.9rem; font-family: 'Helvetica', 'Arial', sans-serif;">
+              <img src="public/icons/search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;">
+            </div>
+          </div>
+          
+          <!-- 右侧按钮 -->
+          <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+            <a href="tougao.html" class="submit-btn" style="background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
+          </div>
+          <style>
+            .submit-btn:hover {
+              background-color: #000 !important;
+              color: #fff !important;
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文章阅读区域 -->
+    <section class="section">
+      <div class="container">
+        <div class="article-header" id="article-header">
+          <h1>文章标题</h1>
+          <div class="article-meta">
+            <span>作者: 杨树</span>
+            <span>日期: 2026-03-21</span>
+          </div>
+        </div>
+        
+        <div class="article-image">
+          <img src="" alt="文章图片" id="article-image">
+        </div>
+        
+        <div class="article-content" id="article-content">
+          <!-- 文章内容将通过JavaScript动态生成 -->
+        </div>
+        
+        <a href="javascript:history.back()" class="back-btn">返回</a>
+      </div>
+    </section>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-container">
+        <div class="bottom-nav-logo">
+          <a href="tougao.html">投稿</a>
+        </div>
+        <div class="bottom-nav-links-container">
+          <div class="bottom-nav-links">
+          <a href="help.html" class="bottom-nav-link">须知</a>
+          <a href="contact.html" class="bottom-nav-link">联系</a>
+        </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 控制底部导航栏的显示/隐藏
+      document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) {
+          // 当进入阅读文章页面时，隐藏导航栏
+          if (currentPath.includes('article.html')) {
+            bottomNav.style.display = 'none';
+          } else {
+            bottomNav.style.display = 'block';
+          }
+        }
+        
+        // 为搜索框添加回车事件
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+          searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              handleSearch(e);
+            }
+          });
+        }
+      });
+      
+      // 搜索功能
+      function handleSearch(event) {
+        if (event) event.preventDefault();
+        const searchInput = document.querySelector('.search-input');
+        const keyword = searchInput.value.trim();
+        if (keyword) {
+          window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+        }
+      }
+    </script>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <h3>白蝉声</h3>
+          <div class="footer-links">
+            <a href="index.html">白蝉声</a>
+          </div>
+          <p>&copy; 2024 白蝉声. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 获取URL参数，确定是哪篇文章
+      function getURLParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // 文章内容数据
+      const articlesContent = {
+        '不幸的幸福': `
+          <p>我叫利奥，今年二十二岁。我有个哥哥，叫伊莱。</p>
+          <p>他比我大四岁，但一辈子都得让人照顾。他不会说话，走路摇摇晃晃，大部分时间都在笑，像一株永远晒着太阳的向日葵。从这一点看，有这么一个不幸的人在我身边，我怎么会觉得自己不幸呢。</p>
+          <p>现在我二十二岁，在城东一家汽修厂上班。每天下班，工服上的机油还没洗掉，我就得骑二十分钟电动车回爸妈家接伊莱。他永远坐在客厅那块褪色的地毯上，对着电视里晃动的色块笑，亮晶晶的口水顺着下巴往下掉。我得先给他擦干净，再喂他吃晚饭——那些打成泥糊，南瓜和土豆混成橘黄色。他总是吃得满脸都是，然后继续笑，眼睛弯成两道缝。</p>
+          <p>同事老周约我去过好几次酒吧，说新来的姑娘嗓子很甜。我摇头，说家里有人等。他们拍着我的肩膀说“你真孝顺”，我笑笑，没解释。那不是孝顺，是责任，像一道焊死在脚腕上的铁链。周末我要带伊莱去公园，他会追着鸽子跑，摔倒了也不哭，只是趴在地上咯咯地笑。我就得跑过去把他扶起来，拍掉他身上的土，顺便擦掉自己额角的汗。阳光照在我们身上，有时候我觉得自己像个年轻的父亲，而伊莱是那个永远长不大的孩子。</p>
+          <p>这种日子过久了，人会变锈。早上睁眼就知道今天会发生什么，明天会发生什么，十年后会发生什么。我不喝酒不赌钱，没什么坏毛病，也没什么盼头。</p>
+          <p>大概是从三个月前开始，我发现自己不想吃东西了。第一顿，我看着盘子里的饭，忽然觉得咽下去没有任何意义。胃里空空落落的，那种饥饿感像细小的针，一根一根扎进来，反而让我清醒。我已经很久没有过这种感觉了——属于自己的感觉。后来我开始有意地饿着自己。一天，两天。看着镜子里自己越来越凹陷的脸颊，竟然有种隐秘的满足。饿着的时候，我才是我自己，不是伊莱的弟弟，不是一个行走的责任，就是一个会饿、会疼、会缩在角落里数自己心跳的人。</p>
+          <p>爸妈问过我是不是瘦了。我摇摇头。伊莱在一旁看着我，笑得更开心了，口水淌了一前胸。他大概以为我在跟他玩什么新游戏。</p>
+          <p>今天下班我没直接回家，在厂门口抽了两根烟。天已经黑透了，路灯照着路上稀稀拉拉的人。钥匙是什么时候丢的我不知道，等站在家门口掏口袋才发现空空荡荡。爸妈还没下班，伊莱在屋里。</p>
+          <p>他隔着玻璃看见我，整个人突然弹起来，手舞足蹈，嘴里发出那种“咿咿呀呀”的声音，像一只扑腾着翅膀的鸟。他把两只手都拍在玻璃上，呆呆看着我，好像我不是被锁在门外，而是刚从一场漫长的远行中回来，给了他一个这辈子最大的惊喜。</p>
+          <p>我靠着墙，也隔着玻璃看他。他的手还在拍，嘴巴还在咿呀，口水顺着玻璃往下淌。我看着那张停不下来的笑脸，看着那双亮得过分的眼睛，脑子里嗡嗡响着的声音忽然安静下来。</p>
+          <p>我一直觉得自己活得委屈，用饥饿惩罚自己，用疼痛证明存在。可他呢？他什么都不会做，什么都做不了，连一句完整的话都不会说，却被泡在蜜里似的，笑成这副理所当然的样子。</p>
+          <p>所有人——包括我自己——都觉得他是那个不幸的人，我是那个被拖累的人。可现在隔着这扇玻璃，看着他为我拍手笑成那样，我忽然分不清了。</p>
+          <p>也许从头到尾，被不幸困住的人，只有我自己。</p>
+          <p>他一直都泡在他的蜜里，从来不知道苦是什么。</p>
+          <p>尽管他不知道幸福这两个字怎么写。</p>
+        `,
+        '烧一个好彩瓶': `
+          <p>烧好一个彩瓶，得看准釉料的稠稀，盯紧窑火的明暗，还得等那一口恰到好处的气。</p>
+          <p>老巷深处的那座窑，烟火一续就是三代人。陈砚记事起，指尖就沾着釉料的凉，鼻尖总绕着窑火的暖。祖父留下的旧台账纸页泛黄发脆，一笔一画记着每只彩瓶的生辰：民国二十三年三月初七，孔雀蓝，窑温一千二，成；一九五六年冬月廿一，霁红，试三次，裂于颈。</p>
+          <p>到他这辈，台账换成了硬笔笔记本。十二岁烧出第一只巴掌大的小瓶，釉料调得太稀，出窑时像块蒙尘的玉，他仍郑重写下：一九九八年五月十六，月白，初成。那日父亲蹲在窑口，沉默半晌只道：“留着，等你大了再看。”后来他才知晓，父亲年轻时的第一件作品，早已碎在岁月里，连踪影都没留下。</p>
+          <p>父亲话少，手却极稳。调釉时用指尖蘸一点，在碗边抹开，对着光眯眼端详；装窑时摆弄瓶坯，如同给婴儿铺被褥，轻了怕不稳，重了怕碰伤。最要紧的是看火，窑门缝里透出跳动的光，父亲能在窑前守上许久，火光映得他眉眼忽明忽暗。陈砚问他在看什么，父亲说：“看火走路。火在窑里不是死的，往哪儿走，走得急不急，都得看清。”他又问能否看准，父亲笑了笑，没回头：“人能看准七八成，剩下两三成，全在窑里的气。”</p>
+          <p>彩瓶的釉色从不由匠人完全拿捏。同一份料，同一座窑，窑温差上半度，出来的可能是春日柳芽嫩，也可能是秋夜霜花白。父亲总说这是窑里的气性，陈砚却在万千变化里，看见时光留下的独特色痕。每只瓶都有自己的性子，不肯被全然驯服，偏要留一抹独属自己的印记。他渐渐明白，这些彩瓶不是烧出来的，是等出来的——等天时，等窑火，等窑里那一口恰到好处的气。</p>
+          <p>后来他去外地上大学，主修经济学。图书馆里，“决定论”三个字撞进眼底：世间万物皆有因果，此刻的每一粒尘埃，都是过去所有力的总和。他对着书页怔愣许久，忽然想起窑前那些守火的夜晚。原来那些看不准的火候、拿不稳的釉料，不过是变量太多，人力难以穷尽。若能精确控制一切，想要什么釉色，便能烧出什么釉色。他像握住了一把钥匙，笃信这世上所有事，皆可解释、可预测、可掌控。</p>
+          <p>放假归家，他坐在窑边给父亲讲因果链，讲回归分析，讲精密的计算模型。父亲手里擦着刚出窑的霁红瓶，听得很慢，始终沉默。末了，父亲举起瓶子对着光：“这霁红，烧了六窑才成一件。你那些道理，能算出它在哪一窑出世吗？”陈砚一时语塞，心里却仍不服气，只觉得是数据不够完备。</p>
+          <p>毕业后，他进入一家市场预测公司。站在写字楼的落地窗前，他满心笃定，终于能将这套理论用在实处。市场本就是最大的变量集合，只要模型足够精细，总能推算出八九不离十的结果。</p>
+          <p>起初他干劲满满，将万千变量塞进方程，试图为每一个消费动向找到缘由。第一份乐观的预测报告，最终偏差两个百分点；他调整模型，加入天气与竞品数据，细分品类与区域，却仍因一场突如其来的网红带货，让部分品类的预测彻底失准。</p>
+          <p>他开始失眠，凌晨三点对着屏幕反复运算，总觉得是自己漏掉了什么关键。同事劝他放宽心，市场本就有不可预测之处。那声“unpredictable”格外刺耳，不可预测，不就是父亲口中窑里那说不清的气吗？</p>
+          <p>他忽然懂了父亲说的“七八成”。原来学问走到尽头，终究还是躲不过那剩下的两三成。</p>
+          <p>年终总结会，他的报告再次被驳回，上司的话语带着不满与质疑。他默默收起文件，没回工位，径直回了出租屋。挫败感如潮水将他淹没，他拨通家里的电话，听筒里传来熟悉的窑火风声。</p>
+          <p>“爸，我做不好，总错。”他的声音闷哑。</p>
+          <p>风声远了些，像是父亲走到了院中：“回来吧，窑火还没熄，回来烧彩瓶。”</p>
+          <p>积压已久的委屈与恼怒瞬间爆发，陈砚猛地提高声音：“烧彩瓶有什么用？凭感觉、靠运气，好坏全看天意？你们根本不懂！”</p>
+          <p>电话那头沉默许久，只传来父亲起身走动的声音，接着是窑门铁栓被拉开时那熟悉的、沉闷的一声。</p>
+          <p>随即电话被挂断了。</p>
+          <p>房间里一片死寂。他转头看向墙角的架子，上面摆满这些年他烧的彩瓶，每一只都贴着标签，记着日期与心绪。十二岁的月白，十七岁的孔雀蓝，二十一岁的天青——那件天青，是父亲少有的夸赞。可此刻在他眼里，这些釉色斑斓的瓶子，全是他无法掌控的证明，全是无声的嘲讽。</p>
+          <p>一股无名火骤然窜起，他冲上前，抬手狠狠扫向木架。</p>
+          <p>哐当——</p>
+          <p>清脆的碎裂声接连炸开，蓝的、红的、青的，那些视若珍宝的彩瓶，瞬间碎作一地瓷片。釉色与瓷渣混杂，像被狠狠砸碎的旧时光。他站在碎片中央，胸口剧烈起伏。</p>
+          <p>烧好一个彩瓶，要调釉、守火、静心等待，要尽人事，还要顺天成。</p>
+          <p>而砸碎一个彩瓶，只需要轻轻一扬手腕。那瞬间的、无可挽回的确定性，是窑火里千盼万盼的釉色永远给不了的。它不会偏色，不会留憾，更不会有半分意外，只用最干脆的破碎，把所有模糊的期待与执念，碾成实实在在的碎片。</p>
+        `,
+        '结论': `
+          <p>房间里很静。窗外偶尔传来几声炮响，很远，闷闷的，像有人在远处捶打湿透的麻袋。弗拉基米尔·伊里奇坐在靠窗的旧椅子里，背对着桌子，脸朝着窗户。霜花蒙住了玻璃，只剩一片模糊的白。他的手指搭在膝盖上，一动不动。</p>
+          <p>谢尔盖从桌子旁边探过身子。他才十九岁，从叶卡捷琳堡来，已经在这间屋子里坐了快两个小时。炉子里的火早灭了，他没去添。他搓了搓手，又放下。</p>
+          <p>“伊里奇？”他压低声音，“也许……乌拉尔那边还能——”</p>
+          <p>伊里奇没有动。炮声又响了几下，这一次近了些，重炮，每隔三四秒一下。谢尔盖听出是重炮，他想问这是我们的炮还是他们的，终究没问出口。</p>
+          <p>“他们从北边压过来了，”他说，“圣光军。刚才来的人说，北线已经完全崩了，骑兵过了卡马河，托博尔斯克投降了。”</p>
+          <p>窗外的炮声停了一瞬，再响起时，已经能听见炮弹落地的闷响。很远，却在一点点靠近。谢尔盖忽然想起小时候在叶卡捷琳堡见过的一场大火，烧了三天三夜，最后整条街什么都没剩下。他现在就是这种感觉。</p>
+          <p>“基辅那边也一样，”他继续说，声音快起来，“圣光军已经进城了，杜马大楼上插了白旗。”</p>
+          <p>又一阵炮声。很近。窗户轻轻一颤，霜花掉下来几片。</p>
+          <p>“我们差一点就成功了，伊里奇，真的就差一点。”谢尔盖站起来，又坐下，“您还记得十月吗？那时候我们冲进来，整栋楼都是脚步声，所有人都在跑，都在笑。您就站在那个门口——”他伸手一指，“人们从您身边跑过，都回头看您。那时候他们是真的相信……”</p>
+          <p>伊里奇的眼睛动了一下，却没有转向他。窗外响起了枪声，不是炮，是步枪，一片一片噼啪作响，像过年的鞭炮，大概就在三四条街外。</p>
+          <p>“彼得格勒那次我们守住了，”谢尔盖说，“尤登尼奇打过来的时候，您亲自去红丘炮台，工人们看见您——”</p>
+          <p>“谢廖沙。”</p>
+          <p>伊里奇开口了。声音很轻，像从很远的地方飘过来。谢尔盖立刻停住。</p>
+          <p>窗外又是一阵枪响，夹杂着喊叫声，远，但清晰。伊里奇依旧望着窗户。霜花又慢慢蒙上，只留刚才震落的一小块，露出外面灰蒙蒙的天。他把手从膝盖抬到扶手上，那只手很瘦，骨节分明。</p>
+          <p>“你刚才说的那些，都确实发生过，”他说，“所以我们不能只盯着一时的景象看。结论总是从历史现象里得出的，总是。”</p>
+          <p>谢尔盖想说什么，又咽了回去。</p>
+          <p>“你说我们差一点就成功了，没错。彼得格勒、莫斯科、察里津，很多地方都只差一点点。如果邓尼金晚来三天，如果高尔察克的炮弹早一天打完，如果维亚特卡那个团没有叛变——如果，如果，如果。但历史不看如果，历史看结果。所以眼前的一切，都会被后人当成唯一的真相。”</p>
+          <p>窗外传来密集的枪声，更近了。</p>
+          <p>“结果是什么？结果是圣光军过了卡马河，托博尔斯克投降，基辅插了白旗。现象已经摆在这里了，谢廖沙。所以旁人只会记住这个结果，不会去问过程。”</p>
+          <p>伊里奇第一次转向他。灯影里，眼神深而黑。</p>
+          <p>“我一直在想一个人，一个德国人。他写过，资本会让它的拥有者腐朽。他说得对，不是可能，不是也许，是必然腐朽。”</p>
+          <p>一颗炮弹落在附近。窗户猛地一颤，谢尔盖下意识缩了缩脖子。伊里奇纹丝不动。谢尔盖看见他的喉结动了一下，像在咽什么东西。</p>
+          <p>“你知道吗，等我真的取得一点胜利，等我有了民心，我就要开始征收余粮，向德国赔款，向那些比我们富有的国家低头，只为换外汇、换机器、换一口气活下去。我要把粮食从农民手里拿走，还说是什么战时共产主义政策，让他们饿着支持我，让工人一天干十六个钟头，告诉他们这是为了未来。”</p>
+          <p>他停了一下。</p>
+          <p>“谢廖沙，我要做的事，和资本家有什么区别？”</p>
+          <p>谢尔盖想说不一样。他张开嘴，却一个字也说不出来。窗外枪声更密了，隐约能听见口令声。他想去把窗帘拉上，又觉得没必要。</p>
+          <p>“马克思说过，无产阶级专政只是从资本主义到共产主义的过渡。”伊里奇的声音低下去，“可这过渡要多久？十年？五十年？一百年？等到我们这批人老了，死了，新来的人坐在这些椅子里——他们还记得这是‘过渡’吗？他们会不会把自己坐的这把椅子，当成了永恒？”</p>
+          <p>谢尔盖站起来，走到炉子旁边。炉子冰凉。他蹲下去，拨了拨灰，什么也没有。</p>
+          <p>窗外传来一片脚步声。许多靴子踩在雪地上，扑扑作响。有人在喊：“往东！往东！”紧接着又是一阵机枪声，近得仿佛就在隔壁街。谢尔盖没有站起来，他蹲在炉子旁边，回头看着伊里奇的背影。</p>
+          <p>伊里奇重新转向窗户。</p>
+          <p>“你看窗外那些人，”他说，“他们冲进来的时候，喊的是‘面包与和平’。可我们拿什么给他们？面包吗？我们连自己的面包都要从农民那里收。和平吗？枪声就在三条街外。谢廖沙，他们会发现，我们给不了面包，也给不了和平。”</p>
+          <p>谢尔盖浑身一凛。他从未这样想过。他站起来，膝盖嘎吱响了一声。</p>
+          <p>“就算我们赢了，”伊里奇继续说，“总有一天，会有另一个人坐在这把椅子里，面对和我们一样的问题，做出和我们一样的选择。然后，又会有一群年轻人冲进来，喊着和我们一样的口号。”</p>
+          <p>窗外的枪声更近了。谢尔盖听见有人在砸门。</p>
+          <p>“这就是历史，谢廖沙。”伊里奇说，“它不是一条直线，而是一个圈。我们以为自己在前进，其实不过是在重复。”</p>
+          <p>门被撞开了。</p>
+          <p>谢尔盖转身，看见一群穿着灰色军装的士兵冲进来。他们的枪上着刺刀，阳光从背后照进来，把他们的影子投在墙上，像一群张牙舞爪的怪物。</p>
+          <p>“举起手来！”有人喊。</p>
+          <p>谢尔盖慢慢举起手。他看向伊里奇，伊里奇依旧坐在椅子里，背对着他们，脸朝着窗户。</p>
+          <p>“伊里奇！”谢尔盖喊。</p>
+          <p>伊里奇没有动。</p>
+          <p>一个士兵冲过去，一把将伊里奇转过来。</p>
+          <p>谢尔盖看见伊里奇的脸上，挂着一丝微笑。</p>
+          <p>“结论。”伊里奇轻声说。</p>
+          <p>枪响了。</p>
+        `,
+        '阅读速度测试': `
+          <p>米涅尔瓦好像在进行一个阅读速度测试。</p>
+          <p>接下来给您做一个阅读速度测试，接下来给你随机呈现一个文本，字数为 1000~1500 字。读完请您对照后边速度表来检测自己的阅读速度。请您以最慢的速度阅读，以确保最后测试结果的准确性。</p>
+          <p>致： 最高伦理与进化规划委员会</p>
+          <p>发自： 应用生物进化研究院，执行院长 卡尔·克伦威尔</p>
+          <p>事由： 关于“社会达尔文主义绝对化纲要”在人力资源优化及社会层级固化项目中的阶段性应用报告</p>
+          <p>一、 总体概述：从自然选择到主动裁决</p>
+          <p>过去百年间，我们很欣慰地看到，社会运行的底层逻辑已经从腐朽的“人道主义怜悯”彻底转向了科学的“进化论伦理”。我们研究院的核心任务，便是将达尔文“物竞天择，适者生存”的自然法则，从一种被动的社会现象，转变为一种主动的、精确的、制度化的国家机器。</p>
+          <p>当前，我们已不再仅仅满足于观察谁在社会的丛林中存活下来，而是通过生物技术，提前定义“适者”的标准，并确保“不适者”在生物学意义上被温和地、高效地淘汰。本季度，我们在三个关键领域取得了突破性进展，现汇报如下。</p>
+          <p>二、 核心项目进展</p>
+          <p>1. “基因信用点”系统（GCP 3.0）的全面铺开</p>
+          <p>该项目旨在将社会贡献与经济价值直接编码进公民的 DNA 序列中。</p>
+          <p>• 运行逻辑： 每一位公民在出生时即被赋予基础信用点（C 级）。在随后的生命周期中，其每一次对社会的“正贡献”（如高强度劳动、高风险职业服役）将激活其 DNA 中的“勤奋基因片段”，增加信用点；反之，任何“负贡献”（如长期失业、需要医疗照顾、表现出同情心等软弱特质）将触发基因编辑器，削减信用点。</p>
+          <p>• 极端应用： 当信用点归零时，基因中预设的“自我了程序”将被激活。该程序通过诱导端粒加速缩短，使个体在 3 至 6 个月内自然衰老死亡。本季度，通过该系统，我们已优化了全国总人口的 3.7%，清除了约 420 万“社会负担基因”。这极大地减轻了社保压力，并显著提升了国民的平均抗压指数。</p>
+          <p>2. “劳动力分层与绝育奖励”计划</p>
+          <p>为了让社会分工回归最原始的力量法则，我们推出了分层绝育计划。</p>
+          <p>• 执行标准： 根据体能、耐痛度和服从性测试，我们将劳动力划分为三等：智士（Alpha）、劳工（Beta）与渣滓（Gamma）。</p>
+          <p>• 激励措施： 对于处于底层的 Gamma 群体，我们提供“终极解脱”选项。只要他们自愿签署《后代灭绝协议》，接受不可逆的生殖隔离手术，研究院将为其提供一次性的“享乐注射”，使其在极乐幻觉中无痛苦离世，并将其遗体用于高蛋白营养剂的循环生产。</p>
+          <p>• 效果评估： 该计划受到底层民众的热烈欢迎，尤其是那些在生存竞争中感到疲惫的个体。他们意识到，与其让携带自身劣质基因的后代继续受苦，不如在享受最后的欢愉后，成为社会能源循环的一部分。这体现了社会达尔文主义中最崇高的人道——即对整体基因库的负责。</p>
+          <p>3. “公共空间净化”与感官隔离政策</p>
+          <p>我们坚信，对弱者的视觉接触，会污染强者的心理环境，降低其进化意志。</p>
+          <p>• 物理净化： 所有基因评分低于“B-”的公民，已被禁止进入城市核心区及空气净化良好的区域。他们的活动范围被限定在“历史遗留区”（原贫民窟）。</p>
+          <p>• 感官净化： 针对高等级公民，我们研发了“现实透镜”。当佩戴者的视线扫过基因不合格者时，透镜会自动将其虚化为模糊的马赛克，并播放愉悦的白噪音，完全隔绝任何可能引发不适感或怜悯心的外部刺激。</p>
+          <p>三、 存在的问题</p>
+          <p>尽管成果斐然，但我们仍观察到一丝逆流。少数“新卢德分子”仍在鼓吹“多样性”和“对弱者的保护”。我们认为，这本质上是基因缺陷导致的心理脆弱。</p>
+          <p>四、 结语</p>
+          <p>软弱是一种可以被治愈的疾病，而我们的药方就是极致的冷酷。</p>
+          <p>未来的世界不属于大多数人，而属于最强壮的少数人。我们研究院的使命，就是通过科技手段，确保这一小部分人不仅拥有权力，更拥有生物学意义上的绝对优越性。</p>
+          <p>进化万岁。</p>
+          <p>卡尔·克伦威尔</p>
+          <p>【应用生物进化研究院】</p>
+          <p>以上为阅读文本的全部内容，速度表如下：</p>
+          <p>1 秒：优秀</p>
+          <p>2 秒：良好</p>
+          <p>3 秒：较差，如果您有时间，请务必来应用生物进化研究院一趟</p>
+          <p>【应用生物进化研究院】</p>
+          <p>“塞”“琪”，“我”“刚”“刚”“看”“看”“到”“了”“一”“个”“非”“常”“有”“意”“思”“的”“古”“代”“文”“献”，“上”“面”“写”“着”“古”“代”“的”“人”“读”“一”“千”“字”“就”“要”“1”“秒”。</p>
+          <p>“米涅尔瓦，你下次说话时能只用一个脑袋的一个嘴吗？我这里没有一个耳朵听得舒服。”</p>
+        `,
+        '听觉': `
+          <p>清晨七点零三分，埃米尔被右耳捕捉到的第一缕声音拽醒——是楼下咖啡馆推开门时，风铃碰撞的脆响，像被捏碎的冰粒。他侧过身，左耳贴着枕头，那半边世界沉在绝对的寂静里，连自己的呼吸声都像是被吞噬了。</p>
+          <p>洗漱时他对着镜子刮胡子，电动剃须刀的嗡鸣从右手传导到骨膜，右耳里塞满了粗糙的震动，左耳却只有冰凉的镜面贴着皮肤的触感。</p>
+          <p>地铁站像个巨型蜂箱。埃米尔站在自动扶梯上，右耳被身后情侣的笑闹、前方老人的咳嗽、头顶广播的报站声灌满，像有无数根细针在耳膜上跳动。他试着转头，想让左耳对着声源，可那侧只有死一般的寂静，两种极端的感受在头颅里撕扯，让他胃里一阵发紧。</p>
+          <p>进了车厢，人挤得像沙丁鱼。一个穿校服的女孩站在他对面，嘴唇动着，似乎在说什么。埃米尔皱起眉，下意识地把右耳凑过去，可周围的喧闹像潮水般涌来，女孩的声音碎在里面，只剩模糊的口型。他看见女孩眼里闪过一丝困惑，然后低下头，不再说话。埃米尔的指尖在口袋里蜷紧，喉结动了动，最终什么也没说。</p>
+          <p>中午去常去的快餐店。服务员隔着柜台问他要什么，埃米尔盯着对方的嘴唇，可抽油烟机的轰鸣、其他顾客的交谈声混在一起，像团乱麻。“抱歉，能再说一遍吗？”他尽量让语气平和。服务员提高了音量，可右耳里的嘈杂更甚，他还是没听清。旁边有人轻轻笑了一声，埃米尔的脸有些发烫，随便指了个套餐，匆匆付了钱。</p>
+          <p>坐在靠窗的位置，他看着窗外的车水马龙。右耳能捕捉到街道上的鸣笛、行人的脚步声，甚至远处工地的敲打声，这些声音毫无遮拦地涌进来，没有间隙，没有缓冲。他想捂住耳朵，可那样想连听到的声音也会被隔绝。他忽然觉得，自己像个坏掉的收音机，只能接收杂乱无章的信号，却调不出清晰的频道。</p>
+          <p>傍晚回到公寓，他把自己摔进沙发里。窗外的天色渐渐暗下来，远处的霓虹灯次第亮起。右耳里的世界慢慢安静了些，只剩下楼下偶尔驶过的汽车声。他侧过身，让左耳贴着沙发靠背，那侧的寂静像块巨大的海绵，吸走了所有声音。</p>
+          <p>他想起白天女孩困惑的眼神，服务员不耐烦的语气，还有自己一次次想解释却又放弃的瞬间。他能听见这个世界，却又像听不见；他想靠近别人，却总被无形的墙隔开。</p>
+          <p>埃米尔站起身，走到窗边，推开了一扇窗。晚风吹进来，带着些许凉意。右耳能感受到风拂过的声音，很轻，像羽毛扫过。他伸出手，让风穿过指缝。</p>
+          <p>他想，或许就是这样吧。听觉，还有所有的感觉，本就是件矛盾的事。人大概永远无法真正认识这个世界，也无法完全被另一个人理解。这就是孤独，躲不掉的。但至少此刻，风还在吹，他还能听见风的声音——哪怕只有一只耳朵。</p>
+          <p>窗外的灯火在风中明明灭灭，右耳里那点微弱却清晰的声响，还在。</p>
+        `,
+        '春雾': `
+          <p>伊莱娜坐在门槛上，倒出靴子里的石子。</p>
+          <p>那颗小石子硌了她一整天。清晨出门时就觉出异样，她却没停步，一路走到镇子东头的橡树林，折返后又沿河岸漫行，直到雾气从水面漫上来，将天地晕成一片朦胧。</p>
+          <p>战争持续着，她养成了走路的习惯。待在屋里时，总觉自己在一点点缩小，墙壁像本缓缓合拢的书，要将她夹进某一页里。坐在桌前听着自己的呼吸，仿佛有什么正从身体里丝丝缕缕地漏走。</p>
+          <p>雾很浓，三月的雾裹着泥土与落叶的气息。河岸的草被踩得伏倒，露出湿漉漉的泥地。河水声低低的，像远来人的絮语。她想起小时候，妹妹和她两人在这河边放过纸船。妹妹蹲在岸边，认真地捋平船沿，说要是不漏水就好了，能一直漂到海里去。</p>
+          <p>妹妹就是这样，把小事做得极认真，认真到有时让人不耐烦，事后回想，却觉那份认真里藏着干净的光。伊莱娜有时想，妹妹能去外地读书，大抵就是因这份干净——总有什么愿意为她让路。</p>
+          <p>对岸的树丛被雾晕成灰白影子，模模糊糊的。伊莱娜忽然觉得这雾很好，让一切都变得不确切：远与近、河与天，界限都融了。那些平日里死死压着她的东西，似乎也轻了些。</p>
+          <p>她想起很久以前读过的话：人之所以痛苦，是把自己当作孤立的点，忘了点与点之间全是空气。孤独、恐惧、不确定，这些让她煎熬的感受，都建立在同一个假设上——她是个有明确边界的人。可若边界本就模糊呢？若她与雾、与河水、与这片泥地之间，原就没有清清楚楚的界线呢？</p>
+          <p>这念头让胸口松快了些。不是想通了什么，而是这思考的动作，让她觉出自己还活着——不是配给簿上的数字，是会站在河边看雾、会想起童年纸船的人。</p>
+          <p>雾开始散了。伊莱娜转身，沿来路往回走。</p>
+          <p>脚步不快。家里没人等她。妹妹前阵子寄过信，一切都好。信很短，字迹工整，每个字都站得端端正正。伊莱娜把信折好，压在桌下的玻璃板里。</p>
+          <p>想着妹妹，心便安了些。那样的人，该活在安全的地方。这世界欠她一个安全的地方。</p>
+          <p>路两旁的杨树开始抽芽，嫩绿的芽苞蜷成小拳头，再过几天就要舒展。人大概也这样，有时不得不蜷起来，缩成很小的一团，不是因软弱，只是时候未到。</p>
+          <p>拐上最后一段坡道时，她愣了愣。天空的位置有些不对——那里本该有墙，此刻却只剩灰蒙蒙的天。废墟像被啃过一口，露出里面的横梁与碎砖。气味涌过来，焦糊混着潮湿，还有石灰与木头的腥气。她看见了玻璃板下的信，压在碎瓦砾间，玻璃碎了，信纸边角被风吹得翘起来。</p>
+          <p>门框还斜倚着，她认出上面那些刻痕——妹妹量身高时偷偷为她往上画的记号，歪歪扭扭的，却一直都在。</p>
+          <p>她慢慢走过去，脚下的碎砖发出咔咔声。没哭，脸上很干，整个人像被雾浸透了，还做不出潮湿的反应。</p>
+          <p>她听见了声音。坡道下的发动机轰鸣，履带碾过路面的声响，还有人的喊叫——不是她熟悉的语言。那些声音从镇子方向涌上来，像涨潮的水。军车出现了，一辆，又一辆。车上的士兵穿着深色制服，脸上没什么表情——不是凶狠，不是兴奋，是更让人发冷的东西：不在乎。</p>
+          <p>他们看见了她。</p>
+          <p>不，他们没看见她。他们看见的是废墟里的一个女人，穿着沾泥点的靴子。就像看见路边的杨树、塌了的院墙、还在冒烟的瓦砾堆。没有一道目光在她身上停留超过一秒。</p>
+          <p>她不是目标，不是障碍，什么都不是。一辆车从面前开过，带起的风掀动了信纸边角。第二辆也过去了。他们不在乎她是谁，不在乎这堆碎瓦砾曾是有门框、有刻痕、有信的屋子，不在乎她的妹妹在外地读书，写信时把每个字都写得端端正正。他们不在乎那些让她活下去的东西。</p>
+          <p>伊莱娜慢慢坐下来，她坐在碎砖与灰泥间，背靠着一截残墙。面前是天空，灰蒙蒙的、三月的天空。</p>
+          <p>她忽然觉得很平静，不是想通后的平静，也不是绝望到底的平静，是更深的那种，像河床下的泥土，无论水面怎样翻涌，它自沉在那里。</p>
+          <p>她想，原来如此，原来在河边想到的那些——边界、空气——不是用来安慰自己的，是真的。</p>
+          <p>她确实是雾的一部分。而现在，这堆碎瓦砾是她的一部分，那辆军车是她的一部分，那个不在乎的士兵，也是她的一部分。</p>
+          <p>伊莱娜把背靠在残墙上，碎砖硌着后背。她想起今早靴子里的石子，硌了一整天，直到坐在门槛上才倒出来。那颗石子大概也不在了，被碾碎了，压进新的泥土里。</p>
+          <p>天渐渐暗下去。远处的枪声稀了，偶尔响一两声，像远来人在敲门。军车的灯光从坡道上扫过，掠过废墟，掠过她，继续向前。</p>
+          <p>她没闭眼，望着天空，可天空什么也没有，只有均匀的深灰色。她忽然想起妹妹说过的话。</p>
+          <p>很久以前，妹妹蹲在河边放纸船，船被枯枝卡住了。伊莱娜说算了，反正漂不到海里去。妹妹没抬头，用草秆拨着船，嘟囔了一句：“可是它想漂啊。”</p>
+          <p>伊莱娜坐在废墟里，想起这句话，忽然笑了。很轻，很短暂，像小石子投进河。</p>
+          <p>她说：“是的。它想漂。”声音很小，被风吹散了。</p>
+          <p>她靠在残墙上，慢慢放平身体——像把折好的纸船放在水面上，轻轻的，不惊动任何东西。</p>
+          <p>碎砖硌着后背，灰泥的气味钻进鼻腔，夜风把头发吹到脸上。她知道，天要亮了。</p>
+        `,
+        '程度': `
+          <p>玛莎二十三岁踏上这片土地时，乘着月光，行李箱里半打诗集压着一封姐姐写的信。信里那句“她是为真实而生的灵魂”，被她折进日记本，夹在某首未完成的诗页间。那时她坚信，真实是有形状的——如同初春薄冰，握在掌心会融化，可在消融之前，棱角始终分明。</p>
+          <p>玛莎长得瘦而挺拔，像一株急着够向光的水杉。总低着头，睫毛垂着，把眼里的光都藏住。</p>
+          <p>街心广场的大屏昼夜不息，不同肤色的人们手挽着手，晃成一片流动的霓虹。执政党将此称作“万物相融”。玛莎在大学课堂上第一次听闻这套理论时，瞪大了清澈的眼睛，像久冻之人猛然撞进暖炉。她可以身着洗得发白的旧裙走进画廊，画框里的目光从不会盘问她的国籍；也能在咖啡馆里与流浪汉争辩诗句。那时她以为，圆，便是完整。</p>
+          <p>那年春天，楼下搬来新邻居。阳台晾着纹样陌生的床单，风一吹，便鼓成饱满的帆。玛莎每日路过总会抬头望一眼，并无缘由，只是那花纹让她想起幼时画册里，遥远得叫不出名字的地方。有时床单收起，空荡荡的晾衣绳在风里微颤，像一根无人拨动的弦。她静静看片刻，便继续走自己的路。</p>
+          <p>夏日咖啡馆冷气故障的午后，玛莎端着冰咖啡走到角落，放在流浪汉的桌上。他抬起头。眼睛亮了一下。她指了指他手边的本子。他推过来，翻到某一页。那些字歪歪扭扭，有的墨迹洇开，像落在水里的叶子。月亮两个字写得很大，占了大半行，月亮后面跟着一些她不认识的词。但她都懂了。她把本子推回去。回到自己座位。后来再去，他在，桌上就有两杯咖啡。他不在，就一杯。她坐在窗边看街，冰咖啡的杯壁上，水珠一颗一颗往下流，在桌布上洇开一小圈深色的痕。侍者有一回经过，压低声音说了句什么。她抬起头看他。目光相接的时间，刚好够一滴水珠滑到桌面。她低下头，继续看街。</p>
+          <p>秋日的露天音乐会，台上唱着和平的歌，风把旋律吹向远方。不同肤色的手紧紧相握，体温透过掌心传递。玛莎的心跳得几乎要撞破肋骨，她以为这样的暖意，足以焐热一生。</p>
+          <p>散场时她才发觉，自己掌心的汗浸湿了邻座人的手背。那人松开手，在裤腿上轻轻一蹭。</p>
+          <p>动作很轻，像掸去一粒尘埃。</p>
+          <p>玛莎看在眼里，一言未发，只默默把手插进外套口袋。兜里装着破旧的硬币，冰凉刺骨。</p>
+          <p>冬日将至，先是收音机里断断续续的警报。玛莎关掉收音机，踩着薄霜去买面包。面包店的玻璃凝着白雾，店主笑着问她要不要多带一个，“说不定明天就吃不上热乎的了”。次日警报再起，她去邮局给姐姐寄信，邮票贴得歪斜，工作人员慢悠悠道：“近来路况不好，信怕是要绕远路。”第三天，第四天，警报愈发密集，像上了锈的发条吱呀作响。</p>
+          <p>直到某天清晨，收音机里的警报换成了新政党的宣言，字句如淬冰的铁钉，一下下凿穿空气。“旧时代已然落幕。”那个声音说。玛莎望着收音机上红色的指示灯，有些不知所措。她想念姐姐了，寒冷的时候，姐姐为她烤着火，火炉的火苗在整个冬天都不停歇，可在这里却熄灭了。</p>
+          <p>旧执政党倒台的速度，比杯中的咖啡凉得还要快。后来听闻，他们最后一次会议设在音乐厅，暗红丝绒幕布低垂，议题竟是如何用和声拦下炮弹。台下两百余人，无人发笑，只有管风琴的余韵在梁柱间久久萦绕。玛莎听到这消息后沉默了，只望着她那洁白的手指发呆。</p>
+          <p>冬日的风卷着焦黑的碎木掠过旷野，玛莎攥着一束野菊站在刚被炮火啃噬过的平地上。泥土里还混着未燃尽的纸屑，风过处，扬起细小的灰，落在她的发间。她是唯一来这里的人，轻轻踩过凹凸的地面，发出细碎的摩擦声。野菊的花瓣沾着晨露，她蹲下身将花放在一丛焦枯的草边，指尖触到温热的土块时，泪水毫无预兆地涌出来，顺着脸颊往下淌，嗒嗒地落在手背上、落在野菊的花瓣上，与晨露混在一起，分不清哪滴来自天空，哪滴源于心底。周围静得能听见这细碎的声响，远处有乌鸦掠过，翅膀扇动的声音像一块破布在风里抖。她立在那里，看着野菊在风中轻轻摇晃，直到一些花瓣吹落，花不再完整，才转身离开。</p>
+          <p>玛莎被分配到织布厂那日，天色是沉郁的铅灰。她织着一种灰黑色的布，没人告知这布的用途。车间里永远飘着机油与棉絮，机器的轰鸣钻进骨缝，像无数夏蝉在胸腔里振翅。她学会了以最快的速度重复同一个动作，手指被纱线勒出血痕，结痂，磨破，再结出更厚的痂。她慢慢瘦了，嘴唇也不红润了，但她没有丝毫察觉。</p>
+          <p>某日傍晚，她去车间外接水，撞见一个穿白连衣裙的女孩。头发梳得一丝不苟，发尾系着米白丝带，手里提着一只银质鸟笼，笼门敞开，空荡得能望见对面的落日。女孩看见她，睫毛轻颤，下意识往后退了半步。</p>
+          <p>那一步极轻。银质鸟笼在风里荡着，落在地上的影子，也是空的。</p>
+          <p>玛莎扶着水龙头的手骤然收紧。她盯着水桶，水面晃着落日的碎光。张了张嘴，终究无言。</p>
+          <p>女孩的脚步声渐渐远去，她关掉水龙头，立在原地，看着水面慢慢平复。落日碎影重新聚拢，看似完整——可她清楚，这早已不是方才那份完整。</p>
+          <p>那晚，宿舍的硬板床硌得人骨头生疼。玛莎睁着眼望向天花板，墙皮剥落处像一幅模糊的地图。她想起姐姐的信，想起那个在咖啡馆与她争辩诗句的流浪汉，想起露天音乐会上那些紧紧相握的手。那些曾以为永远不会变的东西，原来都只是程度问题——程度够了，薄冰会融，圆会碎，真实会模糊成一片灰白。</p>
+          <p>她摸出日记本，翻到夹着姐姐信的那页。信纸上的字迹已经模糊，那句“她是为真实而生的灵魂”，像被水浸过，只剩下淡淡的痕迹。她忽然明白，姐姐说的真实，从来不是棱角分明的薄冰，而是流动的、变化的、有深浅的——是程度。</p>
+          <p>窗外的月光照进来，落在她的手背上。她抬起手，看月光在指缝间流淌。原来月光也是有程度的，有时浓，有时淡，有时被云遮，有时铺满整个房间。</p>
+          <p>她笑了。很轻，很短暂，像月光落在纸上的声音。</p>
+          <p>她知道，自己终于懂了。</p>
+        `
+      };
+
+      // 根据文章参数显示文章内容
+      document.addEventListener('DOMContentLoaded', function() {
+        const articleParam = getURLParameter('article') || getURLParameter('file');
+        const articleHeader = document.getElementById('article-header');
+        const articleContent = document.getElementById('article-content');
+        const articleImage = document.getElementById('article-image');
+        
+        // 图片映射关系
+        const imageMap = {
+          'chanyushui': 'public/images/third.jpg',
+          'tiaolou': 'public/images/duhougan.jpg',
+          'shaoyigehaocaiping': 'public/images/duanpian.jpg',
+          'chengdu': 'public/images/duanpian.jpg',
+          'tingjue': 'public/images/duanpian.jpg',
+          'chunwu': 'public/images/duanpian.jpg',
+          'buxingdexingfu': 'public/images/duanpian.jpg',
+          'jielun': 'public/images/duanpian.jpg',
+          'yuedusuduceshi': 'public/images/duanpian.jpg'
+        };
+        
+        // 标题映射关系
+        const titleMap = {
+          'chanyushui': '蝉鱼水',
+          'tiaolou': '跳楼',
+          'shaoyigehaocaiping': '烧一个好彩瓶',
+          'chengdu': '程度',
+          'tingjue': '听觉',
+          'chunwu': '春雾',
+          'buxingdexingfu': '不幸的幸福',
+          'jielun': '结论',
+          'yuedusuduceshi': '阅读速度测试'
+        };
+        
+        if (articleParam) {
+          // 从JSON文件加载内容
+          fetch(`public/data/${articleParam}.json`)
+            .then(response => response.json())
+            .then(data => {
+              // 设置文章标题
+              articleHeader.querySelector('h1').textContent = data.标题 || data.title || titleMap[articleParam] || '文章标题';
+              
+              // 设置文章内容
+              articleContent.innerHTML = data.内容 || data.content || '<p>文章内容加载中...</p>';
+              
+              // 设置文章图片，与首页保持一致
+              if (imageMap[articleParam]) {
+                articleImage.src = imageMap[articleParam];
+                articleImage.alt = data.标题 || data.title || titleMap[articleParam] || '文章图片';
+              }
+              
+              // 设置文章作者和日期
+              const articleMeta = articleHeader.querySelector('.article-meta');
+              if (articleMeta) {
+                const authorElement = articleMeta.querySelector('span:first-child');
+                const dateElement = articleMeta.querySelector('span:last-child');
+                if (authorElement) {
+                  authorElement.textContent = `作者: ${data.作者 || data.author || '未知'}`;
+                }
+                if (dateElement) {
+                  dateElement.textContent = `日期: ${data.日期 || data.date || '2026-03-21'}`;
+                }
+              }
+            })
+            .catch(error => {
+              // 显示错误信息
+              articleContent.innerHTML = `
+                <div class="empty-state">
+                  <h3>文章不存在</h3>
+                  <p>抱歉，找不到您要找的文章。</p>
+                  <a href="javascript:history.back()" class="back-btn">返回</a>
+                </div>
+              `;
+            });
+        } else {
+          // 显示错误信息
+          articleContent.innerHTML = `
+            <div class="empty-state">
+              <h3>未指定文章</h3>
+              <p>请从首页选择一篇文章进行阅读。</p>
+              <a href="index.html" class="back-btn">返回首页</a>
+            </div>
+          `;
+        }
+      });
+    </script>
+  </body>
+</html>

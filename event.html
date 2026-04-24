@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://zsztoepvtxddqyhdkqdb.supabase.co;" />
+    <title>活动详情 - 白蝉声</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Georgia', serif;
+        line-height: 1.6;
+        color: #333;
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      /* 活动图片容器 */
+      .event-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* 活动图片 */
+      .event-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* 文字内容 */
+      .event-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        z-index: 10;
+        max-width: 80%;
+      }
+
+      .event-content h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      }
+
+      .event-content p {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        line-height: 1.8;
+      }
+
+      /* 首页按钮 */
+      .home-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+        margin-top: 2rem;
+        border: 1px solid white;
+      }
+
+      .home-btn:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .event-content h1 {
+          font-size: 1.8rem;
+        }
+
+        .event-content p {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 活动图片 -->
+    <div class="event-container">
+      <img src="public/images/huodonger.jpg" alt="活动图片" class="event-image">
+      
+      <!-- 文字内容 -->
+      <div class="event-content">
+        <h1>本网站首份期刊正在征稿中</h1>
+        <p>符合投稿标准的投稿者可以 天文 为主题进行自己喜欢的任何该领域知识或故事亦或是相关创作进行投稿</p>
+        <p>截止时间：2026/7/4</p>
+        <a href="index.html" class="home-btn">返回首页</a>
+      </div>
+    </div>
+  </body>
+</html>

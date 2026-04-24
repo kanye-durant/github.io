@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://zsztoepvtxddqyhdkqdb.supabase.co;" />
+    <title>搜索结果 - 白蝉声</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Georgia', serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* 顶部导航栏 */
+      .top-bar {
+        background-color: #f0f0f0;
+        padding: 10px 0;
+      }
+
+      .top-bar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .top-bar-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .top-bar-left .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #000;
+        text-decoration: none;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 15px;
+      }
+
+      .nav-link {
+        color: #333;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 400;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+
+      .top-bar-center {
+        flex: 0 0 350px;
+        margin: 0 10px;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        font-size: 0.8rem;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+
+      .search-btn {
+        position: absolute;
+        left: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #999;
+        font-size: 0.8rem;
+      }
+
+      .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .submit-btn {
+        background-color: #000;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 2px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        font-weight: 500;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+
+      .submit-btn:hover {
+        background-color: #333;
+        color: #fff;
+      }
+
+      /* 搜索结果区域 */
+      .search-results {
+        padding: 60px 0;
+        min-height: 500px;
+      }
+
+      .search-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .search-header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #000;
+      }
+
+      .search-header p {
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      /* 结果列表 */
+      .results-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .result-item {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        height: 700px;
+        position: relative;
+      }
+
+      .result-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .result-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      .result-content {
+        padding: 15px 15px 15px 45px;
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: stretch;
+      }
+
+      .result-content h3 {
+        font-size: 1.1rem;
+        color: #000;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: block;
+        height: 100%;
+        margin: 0 15px 0 0;
+        text-align: left;
+      }
+
+      .result-content p {
+        color: #666;
+        font-size: 0.85rem;
+        line-height: 1.8;
+        text-align: left;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: block;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .result-meta {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        color: #999;
+        font-size: 0.9rem;
+      }
+
+      .result-meta span {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: block;
+        white-space: nowrap;
+      }
+
+      /* 作者入口样式 - 单独设计 */
+      .author-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px 25px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: auto;
+        gap: 15px;
+      }
+
+      .author-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .author-item h3 {
+        font-size: 1.3rem;
+        color: #000;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .author-item p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      /* 空状态 */
+      .empty-state {
+        text-align: center;
+        padding: 100px 0;
+      }
+
+      .empty-state h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        color: #000;
+      }
+
+      .empty-state p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background-color: #333;
+      }
+
+      /* 搜索结果分类样式 */
+      .result-section {
+        margin-bottom: 50px;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000;
+      }
+
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .author-entry {
+        padding: 20px;
+      }
+
+      .result-content h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: #000;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: block;
+        height: auto;
+      }
+
+      .result-content p {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        line-height: 1.6;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: block;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+      }
+
+      .result-meta {
+        display: flex;
+        justify-content: space-between;
+        color: #999;
+        font-size: 0.85rem;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        display: inline-block;
+      }
+
+      /* 底部导航栏 */
+      .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 90;
+      }
+
+      .bottom-nav-container {
+        display: flex;
+        align-items: center;
+        background-color: rgba(15, 15, 15, 0.8);
+        border-radius: 12px;
+        padding: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(60, 60, 60, 0.5);
+      }
+
+      .bottom-nav-logo {
+        background-color: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 64px;
+      }
+
+      .bottom-nav-logo a {
+        color: #fff;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .bottom-nav-logo:hover {
+        background-color: #111;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-logo:hover a {
+        color: #fff;
+      }
+
+      .bottom-nav-links-container {
+        background-color: rgba(68, 68, 68, 0.8);
+        border-radius: 10px;
+        padding: 5px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-links {
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-link {
+        background-color: rgba(68, 68, 68, 0.8);
+        border: 1px solid #888;
+        border-radius: 8px;
+        padding: 12px 10px;
+        color: #ddd;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 54px;
+        margin-right: 5px;
+      }
+
+      .bottom-nav-link:last-child {
+        border: 1px solid #fff;
+        margin-right: 0;
+      }
+
+      .bottom-nav-link:hover {
+        background-color: rgba(85, 85, 85, 0.9);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-left: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 64px;
+      }
+
+      .bottom-nav-btn a {
+        color: #000;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: block;
+        text-align: center;
+        line-height: 1.2;
+        padding-top: 5px;
+      }
+
+      .bottom-nav-btn:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn:hover a {
+        color: #000;
+      }
+
+      /* 页脚 */
+      footer {
+        background-color: #fff;
+        color: #000;
+        text-align: center;
+        padding: 40px 0;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #000;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 15px;
+        margin: 10px 0;
+      }
+
+      .footer-links a {
+        color: #000;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: #666;
+      }
+
+      .footer-content p {
+        font-size: 0.8rem;
+        margin-top: 10px;
+        color: #000;
+      }
+
+      @media (max-width: 768px) {
+        .top-bar-content {
+          flex-direction: column;
+          gap: 10px;
+          align-items: stretch;
+        }
+
+        .top-bar-center {
+          margin: 0;
+          max-width: 100%;
+        }
+
+        .top-bar-right {
+          justify-content: center;
+        }
+
+        .results-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+    <div class="top-bar" style="background-color: #f0f0f0; padding: 15px 0;">
+      <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="top-bar-content" style="display: flex; align-items: center; justify-content: space-between;">
+          <!-- 左侧Logo和导航链接 -->
+          <div class="top-bar-left" style="display: flex; align-items: flex-start; gap: 30px;">
+            <a href="index.html" class="logo" style="display: flex; align-items: center; text-decoration: none; width: 32px; margin-top: 8px;"></a>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="index.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">首页</a>
+                <a href="category.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">分类</a>
+                <a href="column.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">专栏</a>
+                <a href="about.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">关于</a>
+                <a href="contact.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">联系</a>
+              </div>
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="category.html?category=shiyan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">实验</a>
+                <a href="category.html?category=duhougan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">读后感</a>
+                <a href="category.html?category=yuleyoumo" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">娱乐幽默</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 中间搜索框 -->
+          <div class="top-bar-center" style="flex: 0 0 400px; margin: 0 20px;">
+            <div class="search-container" style="position: relative; width: 100%;">
+              <input type="text" class="search-input" id="searchInput" style="width: 100%; padding: 14px 40px 14px 15px; background-color: #d8d8d8; border: none; border-radius: 8px; font-size: 0.9rem; font-family: 'Helvetica', 'Arial', sans-serif;" placeholder="搜索..." onkeypress="if(event.key === 'Enter') handleSearch(event)">
+              <img src="public/icons/search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;" onclick="handleSearch(event)">
+            </div>
+          </div>
+          
+          <!-- 右侧按钮 -->
+          <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+            <a href="tougao.html" class="submit-btn" style="background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
+          </div>
+          <style>
+            .submit-btn:hover {
+              background-color: #000 !important;
+              color: #fff !important;
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+
+    <!-- 搜索结果区域 -->
+    <section class="search-results">
+      <div class="container">
+        <div class="search-header">
+          <h1>搜索结果</h1>
+          <p id="searchKeyword">关键词: </p>
+        </div>
+        <div id="resultsContainer">
+          <!-- 搜索结果将在这里动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-container">
+        <div class="bottom-nav-logo">
+          <a href="tougao.html">投稿</a>
+        </div>
+        <div class="bottom-nav-links-container">
+          <div class="bottom-nav-links">
+            <a href="help.html" class="bottom-nav-link">须知</a>
+          <a href="contact.html" class="bottom-nav-link">联系</a>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <h3>白蝉声</h3>
+          <div class="footer-links">
+            <a href="index.html">白蝉声</a>
+          </div>
+          <p>&copy; 2024 白蝉声. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 文章数据
+      const articlesData = [
+        {
+          title: '蝉鱼水',
+          author: '吴赐仁',
+          category: '先锋',
+          description: '用意识流去描述一个精神状态欠佳的人再次看到自己熟悉的花园',
+          image: 'public/images/xianfeng.jpg',
+          file: 'chanyushui',
+          date: '2026-03-21'
+        },
+        {
+          title: '跳楼',
+          author: '吴赐仁',
+          category: '先锋',
+          description: '用富有个人特色的意识流写作描述一个学生跳楼前当天的所有心理活动',
+          image: 'public/images/duhougan.jpg',
+          file: 'tiaolou',
+          date: '2026-03-21'
+        },
+        {
+          title: '不幸的幸福',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于不幸与幸福的故事，探讨了责任与自我认知的主题...',
+          image: 'public/images/duanpian.jpg',
+          file: 'buxingdexingfu',
+          date: '2026-03-21'
+        },
+        {
+          title: '烧一个好彩瓶',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于烧彩瓶的故事，探讨了控制与放手的哲学...',
+          image: 'public/images/duanpian.jpg',
+          file: 'shaoyigehaocaiping',
+          date: '2026-03-21'
+        },
+        {
+          title: '结论',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于历史与现实的思考，探讨了革命与权力的本质...',
+          image: 'public/images/duanpian.jpg',
+          file: 'jielun',
+          date: '2026-03-21'
+        },
+        {
+          title: '阅读速度测试',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于阅读速度测试的故事，探讨了科技与人性的关系...',
+          image: 'public/images/duanpian.jpg',
+          file: 'yuedusuduceshi',
+          date: '2026-03-21'
+        },
+        {
+          title: '听觉',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于听觉的故事，探讨了孤独与理解的主题...',
+          image: 'public/images/duanpian.jpg',
+          file: 'tingjue',
+          date: '2026-03-21'
+        },
+        {
+          title: '春雾',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于春天雾气的故事，探讨了战争与希望的主题...',
+          image: 'public/images/duanpian.jpg',
+          file: 'chunwu',
+          date: '2026-03-21'
+        },
+        {
+          title: '程度',
+          author: '杨树',
+          category: '短篇小说',
+          description: '关于真实与完整的故事，探讨了社会与个人的关系...',
+          image: 'public/images/duanpian.jpg',
+          file: 'chengdu',
+          date: '2026-03-21'
+        }
+      ];
+
+      // 专栏数据
+      const columnsData = [
+        {
+          title: '自然之声',
+          author: '林雨桐',
+          description: '探索自然与文学的交融',
+          image: 'public/images/sanwen.jpg',
+          category: '散文'
+        },
+        {
+          title: '秋春',
+          author: '吴赐仁',
+          description: '关于季节与人生的思考',
+          image: 'public/images/xianfeng.jpg',
+          category: '先锋'
+        },
+        {
+          title: '杨树春',
+          author: '杨树',
+          description: '关于青春与成长的故事',
+          image: 'public/images/duanpian.jpg',
+          category: '短篇小说'
+        }
+      ];
+
+      // 获取URL参数
+      function getURLParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // 处理搜索
+      function handleSearch(event) {
+        event.preventDefault();
+        const keyword = document.getElementById('searchInput').value.trim();
+        if (keyword) {
+          window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+        }
+      }
+
+      // 执行搜索
+      function performSearch(keyword) {
+        const resultsContainer = document.getElementById('resultsContainer');
+        const searchKeyword = document.getElementById('searchKeyword');
+
+        searchKeyword.textContent = `关键词: "${keyword}"`;
+
+        if (!keyword) {
+          resultsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>请输入搜索关键词</h3>
+              <p>请输入文章标题、作者姓名或专栏名称进行搜索</p>
+              <a href="index.html" class="back-btn">返回首页</a>
+            </div>
+          `;
+          return;
+        }
+
+        const lowerKeyword = keyword.toLowerCase();
+
+        // 搜索文章
+        const matchedArticles = articlesData.filter(article =>
+          article.title.toLowerCase().includes(lowerKeyword) ||
+          article.author.toLowerCase().includes(lowerKeyword) ||
+          article.category.toLowerCase().includes(lowerKeyword) ||
+          article.description.toLowerCase().includes(lowerKeyword)
+        );
+
+        // 搜索专栏
+        const matchedColumns = columnsData.filter(column =>
+          column.title.toLowerCase().includes(lowerKeyword) ||
+          column.author.toLowerCase().includes(lowerKeyword) ||
+          column.category.toLowerCase().includes(lowerKeyword) ||
+          column.description.toLowerCase().includes(lowerKeyword)
+        );
+
+        // 搜索作者 - 检查是否有作者名字匹配
+        const matchedAuthors = [...new Set(matchedArticles.map(a => a.author))].filter(author =>
+          author.toLowerCase().includes(lowerKeyword)
+        );
+
+        // 生成作者作品集入口
+        const authorEntries = matchedAuthors.map(author => {
+          const authorArticles = articlesData.filter(a => a.author === author);
+          return `
+            <div class="result-section">
+              <h2 class="section-title">相关作者</h2>
+              <div class="results-grid">
+                <div class="author-item" onclick="window.location.href='author.html?author=${encodeURIComponent(author)}'">
+                  <h3>${author}</h3>
+                  <p>收录 ${authorArticles.length} 篇作品，点击查看全部</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // 生成专栏结果
+        const columnEntries = matchedColumns.length > 0 ? `
+          <div class="result-section">
+            <h2 class="section-title">专栏</h2>
+            <div class="results-grid">
+              ${matchedColumns.map(result => `
+                <div class="result-item" onclick="window.location.href='column.html?column=${result.title}'">
+                  <img src="${result.image}" alt="${result.title}" class="result-image">
+                  <div class="result-content">
+                    <p>${result.description}</p>
+                    <h3>${result.title}</h3>
+                  </div>
+                  <div class="result-meta">
+                    <span>${result.author} · 作</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : '';
+
+        // 生成作品结果
+        const articleEntries = matchedArticles.length > 0 ? `
+          <div class="result-section">
+            <h2 class="section-title">作品</h2>
+            <div class="results-grid">
+              ${matchedArticles.map(result => `
+                <div class="result-item" onclick="window.location.href='article.html?file=${result.file}'">
+                  <img src="${result.image}" alt="${result.title}" class="result-image">
+                  <div class="result-content">
+                    <p>${result.description}</p>
+                    <h3>${result.title}</h3>
+                  </div>
+                  <div class="result-meta">
+                    <span>${result.author} · 作</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : '';
+
+        const allResults = [...matchedArticles, ...matchedColumns];
+
+        if (allResults.length === 0 && matchedAuthors.length === 0) {
+          resultsContainer.innerHTML = `
+            <div class="empty-state">
+              <h3>未找到相关结果</h3>
+              <p>抱歉，没有找到与 "${keyword}" 相关的内容</p>
+              <a href="index.html" class="back-btn">返回首页</a>
+            </div>
+          `;
+        } else {
+          resultsContainer.innerHTML = `
+            <div class="results-list">
+              ${authorEntries}
+              ${columnEntries}
+              ${articleEntries}
+            </div>
+          `;
+        }
+      }
+
+      // 页面加载时执行搜索
+      document.addEventListener('DOMContentLoaded', function() {
+        const keyword = getURLParameter('q');
+        if (keyword) {
+          document.getElementById('searchInput').value = keyword;
+          performSearch(keyword);
+        } else {
+          performSearch('');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://zsztoepvtxddqyhdkqdb.supabase.co;" />
+    <title>专栏内容选择 - 白蝉声</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Georgia', serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* 顶部搜索栏 */
+      .top-bar {
+        background-color: #f0f0f0;
+        padding: 15px 0 20px;
+      }
+
+      .top-bar-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .top-bar-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+      }
+
+      .top-bar-left .logo {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        width: 32px;
+        margin-top: 8px;
+      }
+
+      .top-bar-center {
+        flex: 0 0 400px;
+        margin: 0 20px;
+      }
+
+      .search-container {
+        position: relative;
+        width: 100%;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 14px 40px 14px 15px;
+        background-color: #d8d8d8;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+      }
+
+      .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .submit-btn {
+        background-color: #fff;
+        color: #000;
+        padding: 8px 16px;
+        border: 1px solid #000;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-weight: 500;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        background-color: #000 !important;
+        color: #fff !important;
+      }
+
+      header {
+        background-color: #fff;
+        color: #000;
+        padding: 15px 0;
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-left {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .nav-link {
+        color: #000;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .nav-right {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .nav-icon {
+        color: #000;
+        text-decoration: none;
+        font-size: 1.2rem;
+      }
+
+      .section {
+        padding: 100px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 60px;
+        color: #000;
+        font-weight: bold;
+        font-family: 'Arial', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .column-header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .column-header h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #000;
+      }
+
+      .column-header p {
+        font-size: 1.2rem;
+        color: #666;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .columns-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
+
+      .column-item {
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        padding: 40px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .column-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .column-item[style*="backgroundImage"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+        z-index: 0;
+      }
+
+      .column-info {
+        position: relative;
+        z-index: 3;
+        color: white;
+        width: 100%;
+      }
+
+      .column-info h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .column-info p {
+        margin-bottom: 15px;
+        opacity: 0.9;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .column-author {
+        font-size: 0.9rem;
+        opacity: 0;
+        font-family: 'Arial', sans-serif;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        transition: opacity 0.3s ease;
+      }
+
+      .column-author .author-label {
+        opacity: 0.5;
+      }
+
+      .column-item:hover .column-author {
+        opacity: 0.8;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 100px 0;
+      }
+
+      .empty-state h3 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #000;
+      }
+
+      .empty-state p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 40px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #000;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .back-btn:hover {
+        background-color: #333;
+      }
+
+      /* 底部导航栏 */
+      .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 90;
+      }
+
+      .bottom-nav-container {
+        display: flex;
+        align-items: center;
+        background-color: rgba(15, 15, 15, 0.8);
+        border-radius: 12px;
+        padding: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(60, 60, 60, 0.5);
+      }
+
+      .bottom-nav-logo {
+        background-color: #1a1a1a;
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 64px;
+      }
+
+      .bottom-nav-logo a {
+        color: #fff;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .bottom-nav-logo:hover {
+        background-color: #111;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-logo:hover a {
+        color: #fff;
+      }
+
+      .bottom-nav-links-container {
+        background-color: rgba(68, 68, 68, 0.8);
+        border-radius: 10px;
+        padding: 5px;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-links {
+        display: flex;
+        align-items: center;
+      }
+
+      .bottom-nav-link {
+        background-color: rgba(68, 68, 68, 0.8);
+        border: 1px solid #888;
+        border-radius: 8px;
+        padding: 12px 10px;
+        color: #ddd;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 54px;
+        margin-right: 5px;
+      }
+
+      .bottom-nav-link:last-child {
+        border: 1px solid #fff;
+        margin-right: 0;
+      }
+
+      .bottom-nav-link:hover {
+        background-color: rgba(85, 85, 85, 0.9);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 17px 18px;
+        margin-left: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 64px;
+      }
+
+      .bottom-nav-btn a {
+        color: #000;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: block;
+        text-align: center;
+        line-height: 1.2;
+        padding-top: 5px;
+      }
+
+      .bottom-nav-btn:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bottom-nav-btn:hover a {
+        color: #000;
+      }
+
+      footer {
+        background-color: #fff;
+        color: #000;
+        text-align: center;
+        padding: 40px 0;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #000;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 15px;
+        margin: 10px 0;
+      }
+
+      .footer-links a {
+        color: #000;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: #666;
+      }
+
+      .footer-content p {
+        font-size: 0.8rem;
+        margin-top: 10px;
+        color: #000;
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        
+        .section-title {
+          font-size: 2.5rem;
+        }
+        
+        .column-header h1 {
+          font-size: 2rem;
+        }
+        
+        .columns-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .column-item {
+          padding: 30px;
+        }
+        
+        /* 响应式顶部搜索栏 */
+        .top-bar-content {
+          flex-direction: column;
+          gap: 10px;
+          align-items: stretch;
+        }
+        
+        .top-bar-center {
+          margin: 0;
+          max-width: 100%;
+        }
+        
+        .top-bar-right {
+          justify-content: center;
+        }
+        
+        /* 响应式底部导航栏 */
+        .bottom-nav {
+          width: 90%;
+          bottom: 10px;
+        }
+        
+        .bottom-nav-container {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 5px;
+          padding: 5px;
+        }
+        
+        .bottom-nav-logo {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+          margin-bottom: 5px;
+          padding: 17px 18px;
+          height: auto;
+        }
+        
+        .bottom-nav-links-container {
+          margin-right: 0;
+          width: 100%;
+          margin-bottom: 5px;
+          padding: 5px;
+        }
+        
+        .bottom-nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          width: 100%;
+        }
+        
+        .bottom-nav-link {
+          margin-right: 5px;
+          margin-bottom: 5px;
+          margin-left: 5px;
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          flex: 1;
+          min-width: 45%;
+          height: auto;
+        }
+        
+        .bottom-nav-link:last-child {
+          border-bottom: none;
+        }
+        
+        .bottom-nav-btn {
+          margin-left: 0;
+          width: 100%;
+          text-align: center;
+          padding: 17px 18px;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部导航栏 -->
+    <div class="top-bar" style="background-color: #f0f0f0; padding: 15px 0 20px;">
+      <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="top-bar-content" style="display: flex; align-items: center; justify-content: space-between;">
+          <!-- 左侧Logo和导航链接 -->
+          <div class="top-bar-left" style="display: flex; align-items: flex-start; gap: 30px;">
+            <a href="index.html" class="logo" style="display: flex; align-items: center; text-decoration: none; width: 32px; margin-top: 8px;"></a>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="index.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">首页</a>
+                <a href="category.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">分类</a>
+                <a href="column.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">专栏</a>
+                <a href="about.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">关于</a>
+                <a href="contact.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">联系</a>
+              </div>
+              <div class="nav-links" style="display: flex; gap: 25px;">
+                <a href="category.html?category=shiyan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">实验</a>
+                <a href="category.html?category=duhougan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">读后感</a>
+                <a href="category.html?category=yuleyoumo" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">娱乐幽默</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 中间搜索框 -->
+          <div class="top-bar-center" style="flex: 0 0 400px; margin: 0 20px;">
+            <div class="search-container" style="position: relative; width: 100%;">
+              <input type="text" class="search-input" style="width: 100%; padding: 14px 40px 14px 15px; background-color: #d8d8d8; border: none; border-radius: 8px; font-size: 0.9rem; font-family: 'Helvetica', 'Arial', sans-serif;">
+              <img src="public/icons/search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;">
+            </div>
+          </div>
+          
+          <!-- 右侧按钮 -->
+          <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+            <a href="tougao.html" class="submit-btn" style="background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
+          </div>
+          <style>
+            .submit-btn:hover {
+              background-color: #000 !important;
+              color: #fff !important;
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- 专栏内容选择区域 -->
+    <section class="section">
+      <div class="container">
+        <div class="column-header" id="column-header">
+          <h1>专栏内容选择</h1>
+          <p>选择你想阅读的专栏内容</p>
+        </div>
+        
+        <div class="columns-grid" id="columns-grid">
+          <!-- 专栏列表将通过JavaScript动态生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+      <div class="bottom-nav-container">
+        <div class="bottom-nav-logo">
+          <a href="tougao.html">投稿</a>
+        </div>
+        <div class="bottom-nav-links-container">
+          <div class="bottom-nav-links">
+          <a href="help.html" class="bottom-nav-link">须知</a>
+          <a href="contact.html" class="bottom-nav-link">联系</a>
+        </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 控制底部导航栏的显示/隐藏
+      document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) {
+          // 当进入阅读文章页面时，隐藏导航栏
+          if (currentPath.includes('article.html')) {
+            bottomNav.style.display = 'none';
+          } else {
+            bottomNav.style.display = 'block';
+          }
+        }
+        
+        // 为搜索框添加回车事件
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+          searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              handleSearch(e);
+            }
+          });
+        }
+      });
+      
+      // 搜索功能
+      function handleSearch(event) {
+        if (event) event.preventDefault();
+        const searchInput = document.querySelector('.search-input');
+        const keyword = searchInput.value.trim();
+        if (keyword) {
+          window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+        }
+      }
+    </script>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <h3>白蝉声</h3>
+          <div class="footer-links">
+            <a href="index.html">白蝉声</a>
+          </div>
+          <p>&copy; 2024 白蝉声. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 获取URL参数，确定是哪个专栏
+      function getURLParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // 专栏数据
+      const columnsData = {
+        nature: [
+          {
+            id: 'nature1',
+            title: '自然的声音',
+            description: '探索大自然的奇妙声音，感受自然的魅力...',
+            author: '林雨桐',
+            image: 'public/images/sanwen.jpg'
+          },
+          {
+            id: 'nature2',
+            title: '山林漫步',
+            description: '在山林中漫步，寻找内心的宁静...',
+            author: '林雨桐',
+            image: 'public/images/sanwen.jpg'
+          }
+        ],
+        urban: [
+          {
+            id: 'urban1',
+            title: '蝉鱼水',
+            description: '关于自然与生命的思考，探讨了万物的联系...',
+            author: '吴赐仁',
+            image: 'public/images/xianfeng.jpg'
+          },
+          {
+            id: 'urban2',
+            title: '跳楼',
+            description: '关于生活与选择的思考，探讨了人生的意义...',
+            author: '吴赐仁',
+            image: 'public/images/duhougan.jpg'
+          }
+        ],
+        memory: [
+          {
+            id: 'column1',
+            title: '不幸的幸福',
+            description: '关于不幸与幸福的故事，探讨了责任与自我认知的主题...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column2',
+            title: '烧一个好彩瓶',
+            description: '关于烧彩瓶的故事，探讨了控制与放手的哲学...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column3',
+            title: '结论',
+            description: '关于历史与现实的思考，探讨了革命与权力的本质...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column4',
+            title: '阅读速度测试',
+            description: '关于阅读速度测试的故事，探讨了科技与人性的关系...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column5',
+            title: '听觉',
+            description: '关于听觉的故事，探讨了孤独与理解的主题...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column6',
+            title: '春雾',
+            description: '关于春天雾气的故事，探讨了战争与希望的主题...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          },
+          {
+            id: 'column7',
+            title: '程度',
+            description: '关于真实与完整的故事，探讨了社会与个人的关系...',
+            author: '杨树',
+            image: 'public/images/duanpian.jpg'
+          }
+        ]
+      };
+
+      // 根据专栏ID设置页面标题和专栏列表
+      document.addEventListener('DOMContentLoaded', function() {
+        const columnId = getURLParameter('column');
+        const columnHeader = document.getElementById('column-header');
+        const columnsGrid = document.getElementById('columns-grid');
+        
+        if (columnId) {
+          let columnName = '';
+          let columnDescription = '';
+          
+          switch(columnId) {
+            case 'nature':
+              columnName = '自然之声';
+              columnDescription = '探索自然与文学的交融';
+              break;
+            case 'urban':
+              columnName = '秋春';
+              columnDescription = '关于季节与人生的思考';
+              break;
+            case 'memory':
+              columnName = '杨树春';
+              columnDescription = '关于青春与成长的故事';
+              break;
+            default:
+              columnName = '专栏内容选择';
+              columnDescription = '选择你想阅读的专栏内容';
+          }
+          
+          columnHeader.querySelector('h1').textContent = columnName;
+          columnHeader.querySelector('p').textContent = columnDescription;
+          
+          // 生成专栏列表
+          if (columnsData[columnId]) {
+            columnsGrid.innerHTML = '';
+            columnsData[columnId].forEach((column, index) => {
+              const columnItem = document.createElement('div');
+              columnItem.className = 'column-item';
+              columnItem.style.backgroundImage = `url(${column.image})`;
+              columnItem.innerHTML = `
+                <div class="column-info">
+                  <h3>${column.title}</h3>
+                  <p>${column.description}</p>
+                  <span class="column-author"><span class="author-label">作者·</span>${column.author}</span>
+                </div>
+              `;
+              columnItem.addEventListener('click', function() {
+                window.location.href = `column.html?column=${columnId}&content=${column.id}`;
+              });
+              columnsGrid.appendChild(columnItem);
+            });
+          } else {
+            columnsGrid.innerHTML = `
+              <div class="empty-state">
+                <h3>暂无内容</h3>
+                <p>该专栏目前还没有内容，敬请期待！</p>
+                <a href="index.html" class="back-btn">返回首页</a>
+              </div>
+            `;
+          }
+        } else {
+          // 显示所有专栏
+          columnHeader.querySelector('h1').textContent = '所有专栏';
+          columnHeader.querySelector('p').textContent = '选择你想浏览的专栏';
+          
+          columnsGrid.innerHTML = '';
+          
+          // 自然之声专栏
+          const natureColumn = document.createElement('div');
+          natureColumn.className = 'column-item';
+          natureColumn.style.backgroundImage = `url('public/images/sanwen.jpg')`;
+          natureColumn.innerHTML = `
+            <div class="column-info">
+              <h3>自然之声</h3>
+              <p>探索自然与文学的交融</p>
+              <span class="column-author"><span class="author-label">作者·</span>林雨桐</span>
+            </div>
+          `;
+          natureColumn.addEventListener('click', function() {
+            window.location.href = `column-more.html?column=nature`;
+          });
+          columnsGrid.appendChild(natureColumn);
+          
+          // 秋春专栏
+          const urbanColumn = document.createElement('div');
+          urbanColumn.className = 'column-item';
+          urbanColumn.style.backgroundImage = `url('public/images/xianfeng.jpg')`;
+          urbanColumn.innerHTML = `
+            <div class="column-info">
+              <h3>秋春</h3>
+              <p>关于季节与人生的思考</p>
+              <span class="column-author"><span class="author-label">作者·</span>吴赐仁</span>
+            </div>
+          `;
+          urbanColumn.addEventListener('click', function() {
+            window.location.href = `column-more.html?column=urban`;
+          });
+          columnsGrid.appendChild(urbanColumn);
+          
+          // 杨树春专栏
+          const memoryColumn = document.createElement('div');
+          memoryColumn.className = 'column-item';
+          memoryColumn.style.backgroundImage = `url('public/images/duanpian.jpg')`;
+          memoryColumn.innerHTML = `
+            <div class="column-info">
+              <h3>杨树春</h3>
+              <p>关于青春与成长的故事</p>
+              <span class="column-author"><span class="author-label">作者·</span>杨树</span>
+            </div>
+          `;
+          memoryColumn.addEventListener('click', function() {
+            window.location.href = `column-more.html?column=memory`;
+          });
+          columnsGrid.appendChild(memoryColumn);
+        }
+      });
+    </script>
+  </body>
+</html>
