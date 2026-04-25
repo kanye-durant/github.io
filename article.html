@@ -806,15 +806,15 @@
         
         // 图片映射关系
         const imageMap = {
-          'chanyushui': 'public/images/third.jpg',
-          'tiaolou': 'public/images/duhougan.jpg',
-          'shaoyigehaocaiping': 'public/images/duanpian.jpg',
-          'chengdu': 'public/images/duanpian.jpg',
-          'tingjue': 'public/images/duanpian.jpg',
-          'chunwu': 'public/images/duanpian.jpg',
-          'buxingdexingfu': 'public/images/duanpian.jpg',
-          'jielun': 'public/images/duanpian.jpg',
-          'yuedusuduceshi': 'public/images/duanpian.jpg'
+          'chanyushui': '/images/third.jpg',
+          'tiaolou': '/images/duhougan.jpg',
+          'shaoyigehaocaiping': '/images/duanpian.jpg',
+          'chengdu': '/images/duanpian.jpg',
+          'tingjue': '/images/duanpian.jpg',
+          'chunwu': '/images/duanpian.jpg',
+          'buxingdexingfu': '/images/duanpian.jpg',
+          'jielun': '/images/duanpian.jpg',
+          'yuedusuduceshi': '/images/duanpian.jpg'
         };
         
         // 标题映射关系
@@ -832,7 +832,7 @@
         
         if (articleParam) {
           // 从JSON文件加载内容
-          fetch(`public/data/${articleParam}.json`)
+          fetch(`/data/${articleParam}.json`)
             .then(response => response.json())
             .then(data => {
               // 设置文章标题
