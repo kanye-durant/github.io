@@ -610,35 +610,10 @@
       </div>
     </section>
 
-    <!-- 底部导航栏 -->
-    <div class="bottom-nav">
-      <div class="bottom-nav-container">
-        <div class="bottom-nav-logo">
-          <a href="tougao.html">投稿</a>
-        </div>
-        <div class="bottom-nav-links-container">
-          <div class="bottom-nav-links">
-          <a href="help.html" class="bottom-nav-link">须知</a>
-          <a href="contact.html" class="bottom-nav-link">联系</a>
-        </div>
-        </div>
-      </div>
-    </div>
+
     <script>
-      // 控制底部导航栏的显示/隐藏
+      // 为搜索框添加回车事件
       document.addEventListener('DOMContentLoaded', function() {
-        const currentPath = window.location.pathname;
-        const bottomNav = document.querySelector('.bottom-nav');
-        if (bottomNav) {
-          // 当进入阅读文章页面时，隐藏导航栏
-          if (currentPath.includes('article.html')) {
-            bottomNav.style.display = 'none';
-          } else {
-            bottomNav.style.display = 'block';
-          }
-        }
-        
-        // 为搜索框添加回车事件
         const searchInput = document.querySelector('.search-input');
         if (searchInput) {
           searchInput.addEventListener('keypress', function(e) {

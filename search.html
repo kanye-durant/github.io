@@ -600,20 +600,7 @@
       </div>
     </section>
 
-    <!-- 底部导航栏 -->
-    <div class="bottom-nav">
-      <div class="bottom-nav-container">
-        <div class="bottom-nav-logo">
-          <a href="tougao.html">投稿</a>
-        </div>
-        <div class="bottom-nav-links-container">
-          <div class="bottom-nav-links">
-            <a href="help.html" class="bottom-nav-link">须知</a>
-          <a href="contact.html" class="bottom-nav-link">联系</a>
-        </div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- 页脚 -->
     <footer>
@@ -717,6 +704,7 @@
       // 专栏数据
       const columnsData = [
         {
+          id: 'nature',
           title: '自然之声',
           author: '林雨桐',
           description: '探索自然与文学的交融',
@@ -724,6 +712,7 @@
           category: '散文'
         },
         {
+          id: 'urban',
           title: '秋春',
           author: '吴赐仁',
           description: '关于季节与人生的思考',
@@ -731,6 +720,7 @@
           category: '先锋'
         },
         {
+          id: 'memory',
           title: '杨树春',
           author: '杨树',
           description: '关于青春与成长的故事',
@@ -817,7 +807,7 @@
             <h2 class="section-title">专栏</h2>
             <div class="results-grid">
               ${matchedColumns.map(result => `
-                <div class="result-item" onclick="window.location.href='column.html?column=${result.title}'">
+                <div class="result-item" onclick="window.location.href='column.html?column=${result.id}'">
                   <img src="${result.image}" alt="${result.title}" class="result-image">
                   <div class="result-content">
                     <p>${result.description}</p>
