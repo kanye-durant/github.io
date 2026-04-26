@@ -717,6 +717,8 @@
         const columnHeader = document.getElementById('column-header');
         const articlesGrid = document.getElementById('articles-grid');
         
+        console.log('columnId from URL:', columnId);
+        
         if (columnId) {
           let columnName = '';
           let columnDescription = '';
@@ -763,6 +765,8 @@
                 case '听觉': file = 'tingjue'; break;
                 case '春雾': file = 'chunwu'; break;
                 case '程度': file = 'chengdu'; break;
+                case '蝉鱼水': file = 'chanyushui'; break;
+                case '跳楼': file = 'tiaolou'; break;
                 default: file = encodeURIComponent(article.title);
               }
               
@@ -772,10 +776,8 @@
                 date = '2026-03-07';
                 if (article.title === '蝉鱼水') {
                   image = 'xianfeng.jpg';
-                  file = 'chanyushui';
                 } else if (article.title === '跳楼') {
                   image = 'duhougan.jpg';
-                  file = 'tiaolou';
                 }
               }
               

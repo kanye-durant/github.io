@@ -830,9 +830,25 @@
           'yuedusuduceshi': '阅读速度测试'
         };
         
+        // 反向映射：从中文标题到英文文件ID
+        const reverseTitleMap = {
+          '蝉鱼水': 'chanyushui',
+          '跳楼': 'tiaolou',
+          '烧一个好彩瓶': 'shaoyigehaocaiping',
+          '程度': 'chengdu',
+          '听觉': 'tingjue',
+          '春雾': 'chunwu',
+          '不幸的幸福': 'buxingdexingfu',
+          '结论': 'jielun',
+          '阅读速度测试': 'yuedusuduceshi'
+        };
+        
         if (articleParam) {
+          // 检查是否是中文标题，如果是，转换为英文文件ID
+          const finalArticleParam = reverseTitleMap[articleParam] || articleParam;
+          
           // 从JSON文件加载内容
-          fetch(`${articleParam}.json`)
+          fetch(`${finalArticleParam}.json`)
             .then(response => response.json())
             .then(data => {
               // 设置文章标题
@@ -842,9 +858,9 @@
               articleContent.innerHTML = data.内容 || data.content || '<p>文章内容加载中...</p>';
               
               // 设置文章图片，与首页保持一致
-              if (imageMap[articleParam]) {
-                articleImage.src = imageMap[articleParam];
-                articleImage.alt = data.标题 || data.title || titleMap[articleParam] || '文章图片';
+              if (imageMap[finalArticleParam]) {
+                articleImage.src = imageMap[finalArticleParam];
+                articleImage.alt = data.标题 || data.title || titleMap[finalArticleParam] || '文章图片';
               }
               
               // 设置文章作者和日期
