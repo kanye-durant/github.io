@@ -552,15 +552,15 @@
             <div style="display: flex; flex-direction: column; gap: 10px;">
               <div class="nav-links" style="display: flex; gap: 25px;">
                 <a href="index.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">首页</a>
-                <a href="category.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">分类</a>
-                <a href="column.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">专栏</a>
+                <a href="index.html#categories" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">分类</a>
+                <a href="index.html#columns" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">专栏</a>
                 <a href="about.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">关于</a>
                 <a href="contact.html" class="nav-link" style="color: #333; text-decoration: none; font-size: 1rem; font-weight: 400; font-family: 'Helvetica', 'Arial', sans-serif;">联系</a>
               </div>
               <div class="nav-links" style="display: flex; gap: 25px;">
-                <a href="category.html?category=shiyan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">实验</a>
-                <a href="category.html?category=duhougan" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">读后感</a>
-                <a href="category.html?category=yuleyoumo" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">娱乐幽默</a>
+                <a href="experiment.html" class="nav-link" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif;">实验</a>
+                <span class="nav-link" style="color: #999; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; cursor: not-allowed;">读后感</span>
+                <span class="nav-link" style="color: #999; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; cursor: not-allowed;">娱乐幽默</span>
               </div>
             </div>
           </div>
@@ -785,14 +785,21 @@
           author.toLowerCase().includes(lowerKeyword)
         );
 
+        // 作者名字到英文ID的映射
+        const authorNameToIdMap = {
+          '吴赐仁': 'wuciren',
+          '杨树': 'yangshu'
+        };
+
         // 生成作者作品集入口
         const authorEntries = matchedAuthors.map(author => {
+          const authorId = authorNameToIdMap[author] || author;
           const authorArticles = articlesData.filter(a => a.author === author);
           return `
             <div class="result-section">
               <h2 class="section-title">相关作者</h2>
               <div class="results-grid">
-                <div class="author-item" onclick="window.location.href='author.html?author=${encodeURIComponent(author)}'">
+                <div class="author-item" onclick="window.location.href='author.html?author=${encodeURIComponent(authorId)}'">
                   <h3>${author}</h3>
                   <p>收录 ${authorArticles.length} 篇作品，点击查看全部</p>
                 </div>
