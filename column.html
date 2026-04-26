@@ -752,7 +752,19 @@
               let image = 'duanpian.jpg';
               let author = '杨树';
               let date = '2026-03-21';
-              let file = encodeURIComponent(article.title);
+              let file = '';
+              
+              // 根据文章标题设置对应的文件ID
+              switch(article.title) {
+                case '不幸的幸福': file = 'buxingdexingfu'; break;
+                case '烧一个好彩瓶': file = 'shaoyigehaocaiping'; break;
+                case '结论': file = 'jielun'; break;
+                case '阅读速度测试': file = 'yuedusuduceshi'; break;
+                case '听觉': file = 'tingjue'; break;
+                case '春雾': file = 'chunwu'; break;
+                case '程度': file = 'chengdu'; break;
+                default: file = encodeURIComponent(article.title);
+              }
               
               // 根据专栏和文章标题设置不同的图片和作者
               if (columnId === 'urban') {
