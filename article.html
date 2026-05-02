@@ -18,6 +18,47 @@
         line-height: 1.6;
         color: #333;
         background-color: #f9f9f9;
+        transition: all 0.3s ease;
+      }
+
+      /* 夜间模式 */
+      body.night-mode {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+      }
+
+      body.night-mode .top-bar {
+        background-color: #2a2a2a !important;
+      }
+
+      body.night-mode .top-bar-left a,
+      body.night-mode .nav-link {
+        color: #e0e0e0 !important;
+      }
+
+      body.night-mode .search-input {
+        background-color: #3a3a3a !important;
+        color: #e0e0e0 !important;
+      }
+
+      body.night-mode .submit-btn {
+        background-color: #3a3a3a !important;
+        color: #e0e0e0 !important;
+        border-color: #555 !important;
+      }
+
+      body.night-mode .article-header h1 {
+        color: #fff;
+      }
+
+      body.night-mode .article-meta {
+        color: #999;
+      }
+
+      body.night-mode .back-btn {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #555;
       }
 
       .container {
@@ -489,6 +530,7 @@
           
           <!-- 右侧按钮 -->
           <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
+            <button id="night-mode-btn" style="background-color: #333; color: #fff; padding: 8px 16px; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease; cursor: pointer;">夜间模式</button>
             <a href="tougao.html" class="submit-btn" style="background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
           </div>
           <style>
@@ -870,6 +912,23 @@
               <a href="index.html" class="back-btn">返回首页</a>
             </div>
           `;
+        }
+
+        // 夜间模式切换
+        const nightModeBtn = document.getElementById('night-mode-btn');
+        if (nightModeBtn) {
+          nightModeBtn.addEventListener('click', function() {
+            document.body.classList.toggle('night-mode');
+            if (document.body.classList.contains('night-mode')) {
+              nightModeBtn.textContent = '日间模式';
+              nightModeBtn.style.backgroundColor = '#fff';
+              nightModeBtn.style.color = '#333';
+            } else {
+              nightModeBtn.textContent = '夜间模式';
+              nightModeBtn.style.backgroundColor = '#333';
+              nightModeBtn.style.color = '#fff';
+            }
+          });
         }
       });
     </script>
