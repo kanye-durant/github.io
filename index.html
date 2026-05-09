@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="connect-src *;" />
     <title>白蝉声</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -1310,18 +1311,75 @@
           <div class="top-bar-center" style="flex: 0 0 400px; margin: 0 20px;">
             <div class="search-container" style="position: relative; width: 100%;">
               <input type="text" class="search-input" style="width: 100%; padding: 14px 40px 14px 15px; background-color: #d8d8d8; border: none; border-radius: 8px; font-size: 0.9rem; font-family: 'Helvetica', 'Arial', sans-serif;">
-              <img src="search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;">
+              <img src="search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;" onclick="handleSearch(event)">
             </div>
           </div>
           
           <!-- 右侧按钮 -->
           <div class="top-bar-right" style="display: flex; align-items: center; gap: 15px;">
-            <a href="tougao.html" class="submit-btn" style="background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
+            <div id="auth-container">
+              <a href="#" onclick="event.preventDefault(); handleLoginDirect()" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; margin-right: 5px; cursor: pointer;">登录</a>
+              <span style="color: #999;">/</span>
+              <a href="#" onclick="event.preventDefault(); handleRegisterDirect()" style="color: #000; text-decoration: none; font-size: 0.9rem; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; margin-left: 5px; cursor: pointer;">注册</a>
+            </div>
+            <!-- 用户信息下拉菜单 -->
+            <div id="user-dropdown-container" style="display: none;" class="user-dropdown">
+              <div class="user-info" onclick="toggleUserDropdown()">
+                <span id="user-greeting" style="font-size: 0.9rem; font-weight: 500;">欢迎, </span>
+                <span id="user-name" style="font-size: 0.9rem;"></span>
+              </div>
+              <div class="dropdown-menu" id="user-dropdown-menu">
+                <a href="#" onclick="event.preventDefault(); openSettingsModal()">个人设置</a>
+                <a href="my-articles.html" onclick="event.preventDefault(); navigateToMyArticles()">我的文章</a>
+                <a href="#" onclick="event.preventDefault(); handleLogout()">切换账号</a>
+                <a href="#" onclick="event.preventDefault(); handleLogout()">退出登录</a>
+              </div>
+            </div>
+            <!-- 登录后显示的提交按钮 -->
+            <a href="tougao.html" id="logged-in-submit-btn" style="display: none; background-color: #fff; color: #000; padding: 8px 16px; border: 1px solid #000; border-radius: 8px; font-size: 0.9rem; text-decoration: none; font-weight: 500; font-family: 'Helvetica', 'Arial', sans-serif; transition: all 0.3s ease;">提交</a>
           </div>
           <style>
             .submit-btn:hover {
               background-color: #000 !important;
               color: #fff !important;
+            }
+            .user-dropdown {
+              position: relative;
+              display: inline-block;
+            }
+            .user-info {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              cursor: pointer;
+              padding: 8px 12px;
+            }
+            .dropdown-arrow {
+              font-size: 0.7rem;
+              color: #666;
+            }
+            .dropdown-menu {
+              position: absolute;
+              top: 100%;
+              right: 0;
+              background-color: white;
+              min-width: 160px;
+              box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+              border-radius: 4px;
+              z-index: 1000;
+              display: none;
+              margin-top: 5px;
+            }
+            .dropdown-menu a {
+              display: block;
+              padding: 10px 15px;
+              color: #333;
+              text-decoration: none;
+              font-size: 0.9rem;
+              transition: background-color 0.3s ease;
+            }
+            .dropdown-menu a:hover {
+              background-color: #f0f0f0;
             }
           </style>
         </div>
@@ -1422,7 +1480,7 @@
           <!-- 作品3 - 杨树 -->
           <div class="work-item" style="cursor: pointer;" onclick="window.location.href='article.html?article=shaoyigehaocaiping'">
             <div class="image-container" style="border-radius: 12px; overflow: hidden; aspect-ratio: 1.25/1; position: relative;">
-              <div class="image" style="width: 100%; height: 100%; background-image: url('duanpian.jpg'); background-size: cover; background-position: center;"></div>
+              <div class="image" style="width: 100%; height: 100%; background-image: url('su5.jpg'); background-size: cover; background-position: center;"></div>
               <div class="gradient" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s ease;"></div>
             </div>
             <div style="margin-top: 15px;">
@@ -1438,7 +1496,7 @@
           <!-- 作品4 - 杨树 -->
           <div class="work-item" style="cursor: pointer;" onclick="window.location.href='article.html?article=chunwu'">
             <div class="image-container" style="border-radius: 12px; overflow: hidden; aspect-ratio: 1.25/1; position: relative;">
-              <div class="image" style="width: 100%; height: 100%; background-image: url('duanpian.jpg'); background-size: cover; background-position: center;"></div>
+              <div class="image" style="width: 100%; height: 100%; background-image: url('su4.jpg'); background-size: cover; background-position: center;"></div>
               <div class="gradient" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s ease;"></div>
             </div>
             <div style="margin-top: 15px;">
@@ -1470,7 +1528,7 @@
           <!-- 作品6 - 杨树 -->
           <div class="work-item" style="cursor: pointer;" onclick="window.location.href='article.html?article=tingjue'">
             <div class="image-container" style="border-radius: 12px; overflow: hidden; aspect-ratio: 1.25/1; position: relative;">
-              <div class="image" style="width: 100%; height: 100%; background-image: url('duanpian.jpg'); background-size: cover; background-position: center;"></div>
+              <div class="image" style="width: 100%; height: 100%; background-image: url('su6.jpg'); background-size: cover; background-position: center;"></div>
               <div class="gradient" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s ease;"></div>
             </div>
             <div style="margin-top: 15px;">
@@ -1925,7 +1983,9 @@
 
 
     <!-- 页脚 -->
-
+    <footer style="background-color: #fff; color: #000; text-align: center; padding: 20px 0; border-top: 1px solid #e0e0e0;">
+      <div style="font-size: 0.7rem; color: #999;">该网站由董子骏（吴赐仁）（17）独立建设</div>
+    </footer>
 
     <script>
       // 轮播功能
@@ -2218,6 +2278,280 @@
       const questionMark = document.querySelector('.question-mark');
       questionMark.classList.remove('loading-fill');
     }
+  </script>
+
+  <!-- 认证弹窗 -->
+  <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div id="auth-modal-content" style="background-color: white; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; position: relative;">
+      <button onclick="closeAuthModal()" style="position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #999;">&times;</button>
+      <div style="display: flex; margin-bottom: 25px; border-bottom: 1px solid #eee;">
+        <button id="login-tab" onclick="showAuthTab('login')" style="flex: 1; padding: 10px; background: none; border: none; font-size: 1rem; font-weight: 500; color: #000; cursor: pointer; border-bottom: 2px solid #000;">登录</button>
+        <button id="signup-tab" onclick="showAuthTab('signup')" style="flex: 1; padding: 10px; background: none; border: none; font-size: 1rem; font-weight: 500; color: #999; cursor: pointer;">注册</button>
+      </div>
+      <div id="login-form">
+        <form onsubmit="handleLogin(event)">
+          <div style="margin-bottom: 15px;">
+            <input type="email" id="auth-login-email" placeholder="邮箱地址" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+          </div>
+          <div style="margin-bottom: 15px; position: relative;">
+            <input type="password" id="auth-login-password" placeholder="密码（至少6位）" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+            <button type="button" onclick="togglePassword('auth-login-password')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+              <img src="eye.svg" alt="显示密码" id="login-eye-icon" style="width: 18px; height: 18px;">
+            </button>
+          </div>
+          <button type="submit" id="login-submit-btn" style="width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">登录</button>
+        </form>
+        <div style="text-align: center; margin-top: 15px;">
+          <button onclick="showForgotPassword()" style="background: none; border: none; color: #666; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">忘记密码？</button>
+        </div>
+      </div>
+      <div id="signup-form" style="display: none;">
+        <form onsubmit="handleSignup(event)" autocomplete="off">
+          <div style="margin-bottom: 15px;">
+            <input type="email" id="auth-signup-email" placeholder="邮箱地址" required autocomplete="new-email" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+          </div>
+          <div style="margin-bottom: 15px;">
+            <input type="text" id="auth-signup-username" placeholder="用户名" required autocomplete="new-username" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+          </div>
+          <div style="margin-bottom: 15px; position: relative;">
+            <input type="password" id="auth-signup-password" placeholder="密码（至少6位）" required autocomplete="new-password" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+            <button type="button" onclick="togglePassword('auth-signup-password')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+              <img src="eye.svg" alt="显示密码" id="signup-eye-icon" style="width: 18px; height: 18px;">
+            </button>
+            <div id="password-strength" style="margin-top: 5px; font-size: 0.8rem;"></div>
+          </div>
+          <div style="margin-bottom: 15px; position: relative;">
+            <input type="password" id="auth-signup-confirm" placeholder="确认密码" required autocomplete="new-password" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+            <button type="button" onclick="togglePassword('auth-signup-confirm')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+              <img src="eye.svg" alt="显示密码" id="confirm-eye-icon" style="width: 18px; height: 18px;">
+            </button>
+            <div id="password-match-error" style="display: none; color: red; font-size: 0.8rem; margin-top: 5px;">两次输入的密码不一致</div>
+          </div>
+          <button type="submit" id="signup-submit-btn" style="width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">注册</button>
+        </form>
+      </div>
+      <div id="auth-message" style="margin-top: 15px; padding: 10px; border-radius: 8px; display: none; text-align: center; font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
+  <!-- 忘记密码弹窗 -->
+  <div id="forgot-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background-color: white; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; position: relative;">
+      <button onclick="closeForgotModal()" style="position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #999;">&times;</button>
+      <h3 style="margin-bottom: 20px; font-size: 1.2rem; text-align: center;">忘记密码</h3>
+      <form onsubmit="handleForgotPassword(event)">
+        <div style="margin-bottom: 15px;">
+          <input type="email" id="forgot-email" placeholder="请输入邮箱地址" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+        </div>
+        <button type="submit" id="forgot-submit-btn" style="width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">发送重置邮件</button>
+      </form>
+      <div id="forgot-message" style="margin-top: 15px; padding: 10px; border-radius: 8px; display: none; text-align: center; font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
+  <!-- 个人设置弹窗 -->
+  <div id="settings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background-color: white; padding: 30px; border-radius: 12px; width: 400px; max-width: 90%; position: relative;">
+      <button onclick="closeSettingsModal()" style="position: absolute; top: 10px; right: 15px; font-size: 24px; background: none; border: none; cursor: pointer; color: #999;">&times;</button>
+      <h3 style="margin-bottom: 20px; font-size: 1.2rem;">个人设置</h3>
+      <form onsubmit="handleUpdateUsername(event)">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-size: 0.9rem;">用户名</label>
+          <input type="text" id="settings-username" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; outline: none;">
+        </div>
+        <button type="submit" id="settings-submit-btn" style="width: 100%; padding: 12px; background-color: #000; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">保存更改</button>
+      </form>
+      <div id="settings-message" style="margin-top: 15px; padding: 10px; border-radius: 8px; display: none; text-align: center; font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
+  <!-- Supabase认证脚本 -->
+  <script>
+    const supabase = window.supabase.createClient('https://abknzgnzqhlwkoxchvow.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFia256Z256cWhsd2tveGNodm93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjI4NDAsImV4cCI6MjA5Mzg5ODg0MH0.m2HhCOu4HJPFyL70Wb2zHlimH-wP8OMU_IZrhVH3Wpg');
+
+    function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+    function handleLoginDirect() { document.getElementById('auth-modal').style.display = 'flex'; showAuthTab('login'); }
+    function handleRegisterDirect() { document.getElementById('auth-modal').style.display = 'flex'; showAuthTab('signup'); }
+    function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('auth-message').style.display = 'none'; }
+
+    function showAuthTab(tab) {
+      const loginTab = document.getElementById('login-tab');
+      const signupTab = document.getElementById('signup-tab');
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      if (tab === 'login') {
+        loginTab.style.color = '#000'; loginTab.style.borderBottom = '2px solid #000';
+        signupTab.style.color = '#999'; signupTab.style.borderBottom = 'none';
+        loginForm.style.display = 'block'; signupForm.style.display = 'none';
+      } else {
+        signupTab.style.color = '#000'; signupTab.style.borderBottom = '2px solid #000';
+        loginTab.style.color = '#999'; loginTab.style.borderBottom = 'none';
+        signupForm.style.display = 'block'; loginForm.style.display = 'none';
+        document.getElementById('auth-signup-email').value = '';
+        document.getElementById('auth-signup-username').value = '';
+        document.getElementById('auth-signup-password').value = '';
+        document.getElementById('auth-signup-confirm').value = '';
+        document.getElementById('password-strength').textContent = '';
+        document.getElementById('password-match-error').style.display = 'none';
+        document.getElementById('auth-message').style.display = 'none';
+      }
+    }
+
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = event.currentTarget.querySelector('img');
+      if (input.type === 'password') { input.type = 'text'; icon.src = 'eye-off.svg'; }
+      else { input.type = 'password'; icon.src = 'eye.svg'; }
+    }
+
+    function showForgotPassword() { closeAuthModal(); document.getElementById('forgot-modal').style.display = 'flex'; }
+    function closeForgotModal() { document.getElementById('forgot-modal').style.display = 'none'; document.getElementById('forgot-message').style.display = 'none'; }
+
+    function showMessage(elementId, message, type) {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.style.display = 'block';
+      element.style.color = type === 'success' ? '#27ae60' : '#e74c3c';
+      element.style.backgroundColor = type === 'success' ? '#d5f4e6' : '#fdecea';
+      setTimeout(() => { element.style.display = 'none'; }, 5000);
+    }
+
+    function checkPasswordStrength(password) {
+      let strength = '弱'; let color = '#e74c3c';
+      if (password.length >= 6 && password.length <= 8) { strength = '中'; color = '#f39c12'; }
+      else if (password.length > 8) { strength = '强'; color = '#27ae60'; }
+      document.getElementById('password-strength').innerHTML = '密码强度：<span style="color: ' + color + ';">' + strength + '</span>';
+    }
+
+    async function handleSignup(event) {
+      event.preventDefault();
+      const email = document.getElementById('auth-signup-email').value;
+      const username = document.getElementById('auth-signup-username').value;
+      const password = document.getElementById('auth-signup-password').value;
+      const confirmPassword = document.getElementById('auth-signup-confirm').value;
+      const submitBtn = document.getElementById('signup-submit-btn');
+      if (password !== confirmPassword) { document.getElementById('password-match-error').style.display = 'block'; return; }
+      document.getElementById('password-match-error').style.display = 'none';
+      if (password.length < 6) { showMessage('auth-message', '密码至少需要6位', 'error'); return; }
+      submitBtn.disabled = true; submitBtn.textContent = '处理中...';
+      try {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { username } } });
+        if (error) { showMessage('auth-message', error.message, 'error'); }
+        else { showMessage('auth-message', '注册成功，请登录', 'success'); document.getElementById('auth-login-tab').click(); document.getElementById('auth-signup-email').value = ''; document.getElementById('auth-signup-username').value = ''; document.getElementById('auth-signup-password').value = ''; document.getElementById('auth-signup-confirm').value = ''; }
+      } catch (err) { showMessage('auth-message', err.message, 'error'); }
+      finally { submitBtn.disabled = false; submitBtn.textContent = '注册'; }
+    }
+
+    async function handleLogin(event) {
+      if (event) event.preventDefault();
+      const email = document.getElementById('auth-login-email').value;
+      const password = document.getElementById('auth-login-password').value;
+      const submitBtn = document.getElementById('login-submit-btn');
+      submitBtn.disabled = true; submitBtn.textContent = '处理中...';
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) { showMessage('auth-message', error.message, 'error'); }
+        else { showMessage('auth-message', '登录成功', 'success'); await handleLoginSuccess(data.user); setTimeout(() => { closeAuthModal(); }, 1500); }
+      } catch (err) { showMessage('auth-message', err.message, 'error'); }
+      finally { submitBtn.disabled = false; submitBtn.textContent = '登录'; }
+    }
+
+    async function handleLoginSuccess(user) {
+      const authContainer = document.getElementById('auth-container');
+      const dropdownContainer = document.getElementById('user-dropdown-container');
+      const loggedInSubmitBtn = document.getElementById('logged-in-submit-btn');
+      const userName = document.getElementById('user-name');
+      const username = user.user_metadata?.username || user.email;
+      userName.textContent = username;
+      authContainer.style.display = 'none';
+      dropdownContainer.style.display = 'flex';
+      loggedInSubmitBtn.style.display = 'inline-block';
+    }
+
+    async function handleLogout() {
+      try {
+        await supabase.auth.signOut();
+        document.getElementById('auth-container').style.display = 'flex';
+        document.getElementById('user-dropdown-container').style.display = 'none';
+        document.getElementById('user-dropdown-menu').style.display = 'none';
+        document.getElementById('settings-modal').style.display = 'none';
+        document.getElementById('logged-in-submit-btn').style.display = 'none';
+      } catch (error) { console.error('退出失败:', error); }
+    }
+
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+      const submitBtn = document.getElementById('forgot-submit-btn');
+      submitBtn.disabled = true; submitBtn.textContent = '发送中...';
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        if (error) { showMessage('forgot-message', error.message, 'error'); }
+        else { showMessage('forgot-message', '重置邮件已发送，请检查邮箱（可能被误判为垃圾邮件）', 'success'); }
+      } catch (err) { showMessage('forgot-message', err.message, 'error'); }
+      finally { submitBtn.disabled = false; submitBtn.textContent = '发送重置邮件'; }
+    }
+
+    function toggleUserDropdown() {
+      const dropdownMenu = document.getElementById('user-dropdown-menu');
+      dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function navigateToMyArticles() {
+      document.getElementById('user-dropdown-menu').style.display = 'none';
+      window.location.href = 'my-articles.html';
+    }
+
+    function openSettingsModal() {
+      document.getElementById('user-dropdown-menu').style.display = 'none';
+      document.getElementById('settings-modal').style.display = 'flex';
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) { document.getElementById('settings-username').value = user.user_metadata?.username || ''; }
+      });
+    }
+
+    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; document.getElementById('settings-message').style.display = 'none'; }
+
+    async function handleUpdateUsername(event) {
+      event.preventDefault();
+      const username = document.getElementById('settings-username').value;
+      const submitBtn = document.getElementById('settings-submit-btn');
+      if (!username.trim()) { showMessage('settings-message', '用户名不能为空', 'error'); return; }
+      submitBtn.disabled = true; submitBtn.textContent = '保存中...';
+      try {
+        const { data, error } = await supabase.auth.updateUser({ data: { username } });
+        if (error) { showMessage('settings-message', error.message, 'error'); }
+        else { showMessage('settings-message', '用户名更新成功', 'success'); document.getElementById('user-name').textContent = username; setTimeout(() => { closeSettingsModal(); }, 1500); }
+      } catch (err) { showMessage('settings-message', err.message, 'error'); }
+      finally { submitBtn.disabled = false; submitBtn.textContent = '保存更改'; }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      const signupPassword = document.getElementById('auth-signup-password');
+      if (signupPassword) { signupPassword.addEventListener('input', function() { checkPasswordStrength(this.value); }); }
+      const confirmPassword = document.getElementById('auth-signup-confirm');
+      if (confirmPassword) {
+        confirmPassword.addEventListener('input', function() {
+          const password = document.getElementById('auth-signup-password').value;
+          document.getElementById('password-match-error').style.display = this.value !== password ? 'block' : 'none';
+        });
+      }
+      const authModal = document.getElementById('auth-modal');
+      const authModalContent = document.getElementById('auth-modal-content');
+      authModalContent.addEventListener('click', function(event) { event.stopPropagation(); });
+      authModal.addEventListener('click', function(event) { if (event.target === authModal) { closeAuthModal(); } });
+      const forgotModal = document.getElementById('forgot-modal');
+      forgotModal.addEventListener('click', function(event) { if (event.target === forgotModal) { closeForgotModal(); } });
+      const settingsModal = document.getElementById('settings-modal');
+      settingsModal.addEventListener('click', function(event) { if (event.target === settingsModal) { closeSettingsModal(); } });
+      document.addEventListener('click', function(event) {
+        const dropdownMenu = document.getElementById('user-dropdown-menu');
+        const dropdownContainer = document.getElementById('user-dropdown-container');
+        if (dropdownMenu && dropdownContainer && !dropdownContainer.contains(event.target)) { dropdownMenu.style.display = 'none'; }
+      });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) { await handleLoginSuccess(user); }
+    });
   </script>
 </body>
 </html>

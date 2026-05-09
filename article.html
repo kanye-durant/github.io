@@ -524,7 +524,7 @@
           <div class="top-bar-center" style="flex: 0 0 400px; margin: 0 20px;">
             <div class="search-container" style="position: relative; width: 100%;">
               <input type="text" class="search-input" style="width: 100%; padding: 14px 40px 14px 15px; background-color: #d8d8d8; border: none; border-radius: 8px; font-size: 0.9rem; font-family: 'Helvetica', 'Arial', sans-serif;">
-              <img src="search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;">
+              <img src="search.svg" alt="搜索" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; cursor: pointer; opacity: 0.5;" onclick="handleSearch(event)">
             </div>
           </div>
           
@@ -814,8 +814,13 @@
         `
       };
 
+      const supabaseUrl = 'https://zsztoepvtxddqyhdkqdb.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzenRvZXB2dHhkZHF5aGRrcWRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjc0NzEwNDYsImV4cCI6MjA0MzA0NzA0Nn0.Uy3Z5h2Jc85X6K8p6G9R9R9R9R9R9R9R9R9R9R9R9';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
       // 根据文章参数显示文章内容
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', async function() {
+        const articleId = getURLParameter('id');
         const articleParam = getURLParameter('article') || getURLParameter('file');
         const articleHeader = document.getElementById('article-header');
         const articleContent = document.getElementById('article-content');
@@ -825,13 +830,13 @@
         const imageMap = {
           'chanyushui': 'third.jpg',
           'tiaolou': 'duhougan.jpg',
-          'shaoyigehaocaiping': 'duanpian.jpg',
+          'shaoyigehaocaiping': 'su5.jpg',
           'chengdu': 'duanpian.jpg',
-          'tingjue': 'duanpian.jpg',
-          'chunwu': 'duanpian.jpg',
-          'buxingdexingfu': 'duanpian.jpg',
-          'jielun': 'duanpian.jpg',
-          'yuedusuduceshi': 'duanpian.jpg'
+          'tingjue': 'su6.jpg',
+          'chunwu': 'su4.jpg',
+          'buxingdexingfu': 'su1.jpg',
+          'jielun': 'su2.jpg',
+          'yuedusuduceshi': 'su3.jpg'
         };
         
         // 标题映射关系
@@ -860,7 +865,40 @@
           '阅读速度测试': 'yuedusuduceshi'
         };
         
-        if (articleParam) {
+        if (articleId) {
+          // 从数据库加载文章
+          const { data: article, error } = await supabase
+            .from('articles')
+            .select('*')
+            .eq('id', articleId)
+            .single();
+          
+          if (error || !article) {
+            articleContent.innerHTML = `
+              <div class="empty-state">
+                <h3>文章不存在</h3>
+                <p>抱歉，找不到您要找的文章。</p>
+                <a href="javascript:history.back()" class="back-btn">返回</a>
+              </div>
+            `;
+            return;
+          }
+          
+          articleHeader.querySelector('h1').textContent = article.title || '文章标题';
+          articleContent.innerHTML = article.content || '<p>文章内容为空</p>';
+          
+          const articleMeta = articleHeader.querySelector('.article-meta');
+          if (articleMeta) {
+            const authorElement = articleMeta.querySelector('span:first-child');
+            const dateElement = articleMeta.querySelector('span:last-child');
+            if (authorElement) {
+              authorElement.textContent = `作者: ${article.author || '未知'}`;
+            }
+            if (dateElement) {
+              dateElement.textContent = `日期: ${article.created_at ? new Date(article.created_at).toLocaleDateString('zh-CN') : '未知'}`;
+            }
+          }
+        } else if (articleParam) {
           // 检查是否是中文标题，如果是，转换为英文文件ID
           const finalArticleParam = reverseTitleMap[articleParam] || articleParam;
           
