@@ -755,8 +755,14 @@
                   image = 'duhougan.jpg';
                 }
               } else if (columnId === 'memory') {
-                if (article.title === '春雾') {
-                  image = 'su4.jpg';
+                switch(article.title) {
+                  case '不幸的幸福': image = 'su1.jpg'; break;
+                  case '烧一个好彩瓶': image = 'su5.jpg'; break;
+                  case '结论': image = 'su2.jpg'; break;
+                  case '阅读速度测试': image = 'su3.jpg'; break;
+                  case '听觉': image = 'su6.jpg'; break;
+                  case '春雾': image = 'su4.jpg'; break;
+                  case '程度': image = 'duanpian.jpg'; break;
                 }
               }
               

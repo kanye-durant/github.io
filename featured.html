@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>精选作品 - 白蝉声文学平台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f8f8f8;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .top-bar {
+      background-color: #f5f5f5;
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #000;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #666;
+    }
+
+    .nav-bottom {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .nav-bottom a {
+      color: #000;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .search-container {
+      position: relative;
+    }
+
+    .search-input {
+      padding: 14px 40px 14px 15px;
+      border: none;
+      border-radius: 8px;
+      background-color: #d8d8d8;
+      font-size: 1rem;
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background-color: #fff;
+      color: #000;
+      padding: 12px 20px;
+      border: 1px solid #000;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .section {
+      padding: 120px 0;
+      text-align: center;
+    }
+
+    .message-box {
+      background-color: #fff;
+      padding: 80px 60px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-box h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    .message-box p {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      padding: 15px 30px;
+      background-color: #000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #333;
+    }
+
+    footer {
+      background-color: #fff;
+      color: #000;
+      text-align: center;
+      padding: 40px 0;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="nav">
+        <div class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="index.html#categories">分类</a>
+          <a href="index.html#columns">专栏</a>
+        </div>
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="搜索..." id="searchInput" onkeypress="if(event.key === 'Enter') handleSearch(event)">
+          <img src="search.svg" alt="Search" class="search-icon" onclick="handleSearch()">
+        </div>
+        <a href="tougao.html" class="submit-btn">提交</a>
+      </div>
+      <div class="nav-bottom">
+        <a href="experiment.html">实验</a>
+        <span style="color: #999; cursor: not-allowed;">读后感</span>
+        <span style="color: #999; cursor: not-allowed;">娱乐幽默</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 内容区域 -->
+  <section class="section">
+    <div class="container">
+      <div class="message-box">
+        <h2>精选作品</h2>
+        <p>当下作品数量较少，精选模式暂不启用。</p>
+        <p>感谢您的关注！随着平台作品的不断丰富，我们会适时开启精选模式，为您呈现更多优质内容。</p>
+        <a href="index.html" class="back-btn">返回首页</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="container">
+      <h3>白蝉声</h3>
+      <p>&copy; 2024 白蝉声. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function handleSearch(event) {
+      if (event) event.preventDefault();
+      const searchInput = document.getElementById('searchInput');
+      const keyword = searchInput.value.trim();
+      if (keyword) {
+        window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+      }
+    }
+  </script>
+</body>
+</html>
